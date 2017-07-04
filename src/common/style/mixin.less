@@ -1,0 +1,54 @@
+::-webkit-input-placeholder { /* WebKit browsers */
+  color: rgba(200, 200, 200, .5);
+}
+
+:-moz-placeholder { /* Mozilla Firefox 4 to 18 */
+  color: rgba(200, 200, 200, .5);
+}
+
+::-moz-placeholder { /* Mozilla Firefox 19+ */
+  color: rgba(200, 200, 200, .5);
+}
+
+:-ms-input-placeholder { /* Internet Explorer 10+ */
+  color: rgba(200, 200, 200, .5);
+}
+
+.border-1px(@color) {
+  position: relative;
+  &:after {
+    display: block;
+    position: absolute;
+    left: 0;
+    bottom: 0;
+    content: '';
+    width: 100%;
+    border-top: 1px solid @color;
+  }
+}
+
+.border-none() {
+  &:after {
+    display: none !important
+  }
+}
+
+.no-wrap() {
+  text-overflow: ellipsis;
+  overflow: hidden;
+  white-space: nowrap;
+}
+
+@headerHeight: 45px;
+@tabHeight: 40px;
+@lineWidth: 26px;
+@mainBg: #ce3d3a;
+@bgcolor: #f2f4f5;
+@songListBg: #D7D8DA;
+@titleColor: #333;
+@iconColor: #666;
+@textColor: #888;
+@bannerTitle: #477aac;
+@divisionLine: rgba(0, 0, 0, .1);
+
+@htmlWidth: 100%;
