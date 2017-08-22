@@ -3,7 +3,7 @@
  */
 const config = {
   agent: "https://bird.ioliu.cn/v1/?url=",
-  method: "http://118.89.226.181:3000/api"
+  method: "https://dmintmgjaf.localtunnel.me"
 };
 
 export const API_ROOT = "".concat(config.agent, config.method);
