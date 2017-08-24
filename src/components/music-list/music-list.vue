@@ -95,9 +95,9 @@
             selectItem(item, index){
                 this.selectPlay({
                     list: this.songs,
-                    index: index
+                    index: index,
+                    item: item
                 })
-                console.log(item)
             },
             ...mapActions([
                 'selectPlay'

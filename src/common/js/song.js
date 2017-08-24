@@ -1,33 +1,18 @@
 /**
  * Created by 大白胡子 on 2017/6/27.
  */
-import {getLyricsMusic} from 'api/song'
 import {ERR_OK} from 'api/config'
-import api from 'api/config'
+import api from 'api/index'
 
 export default class Song {
-    constructor({id, singer, name, album, picUrl}) {
+    constructor({id, singer, name, album, picUrl, url, lyric}) {
         this.id = id
         this.singer = singer
         this.name = name
         this.album = album
         this.picUrl = picUrl
-    }
-
-    getLyricsMusic() {
-        if (this.lyric) {
-            return Promise.resolve(this.lyric)
-        }
-        return new Promise((resolve, reject) => {
-            getLyricsMusic(this.id).then((res) => {
-                if (res.code === ERR_OK) {
-                    this.lyric = Base64.decode(res.lyric)
-                    resolve(this.lyric)
-                } else {
-                    reject('no lyric')
-                }
-            })
-        })
+        this.url = url
+        this.lyric = lyric
     }
 }
 export function createSong(musicData) {
@@ -37,7 +22,8 @@ export function createSong(musicData) {
         name: musicData.name,
         album: musicData.al.name,
         picUrl: musicData.al.picUrl,
-        // url: musicUrl(musicData.id)
+        url: getMusic(musicData.id, 'url'),
+        lyric: getMusic(musicData.id, 'lyric')
     })
 }
 
@@ -50,4 +36,36 @@ function filterSinger(singer) {
         ret.push(s.name)
     })
     return ret.join('/')
+}
+
+function getMusic(id, type) {
+    let url = []
+    let lyric = []
+
+    if (!id) {
+        return ''
+    }
+    api.getMusicUrl(id).then((res) => {
+        res = res.data
+        if (res.code === ERR_OK) {
+            url.push(res.data[0].url)
+        }
+    })
+    api.getLyricsMusic(id).then((res) => {
+        res = res.data
+        if (res.code === ERR_OK) {
+            lyric.push(res.lrc.lyric)
+        }
+    })
+
+    if (type === 'url') {
+        return url
+    }
+    if (type === 'lyric') {
+        return lyric
+    }
+}
+
+function musicLyric(id) {
+
 }
