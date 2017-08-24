@@ -28,7 +28,13 @@ const routers = new Router({
         {
             path: '/songSheet',
             name: '歌单',
-            component: SongSheet
+            component: SongSheet,
+            children: [
+                {
+                    path: ':id',
+                    component: SongDetail
+                }
+            ]
         },
         {
             path: '/anchorStation',
