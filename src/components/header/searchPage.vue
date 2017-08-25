@@ -3,7 +3,7 @@
     <div class="search-page" v-if="isSearchPage">
       <div class="head-wrapper">
         <div class="back-wrapper">
-          <span class="iconfont icon-jiantouicon search-back" @click="backIndex"></span>
+          <span class="icon icon-back search-back" @click="backIndex"></span>
         </div>
         <div class="search-wrapper">
           <input type="text" class="search-text"
@@ -13,7 +13,7 @@
                  placeholder="请输入歌名，歌手">
           <!--search的渐变下边框-->
           <span class="search-border" :class="showBorder?'search-border-blur':'search-border-focus'"></span>
-          <span class="iconfont icon-guanbi" v-if="searchText" @click="clearSearchText"></span>
+          <span class="icon icon-close" v-if="searchText" @click="clearSearchText"></span>
         </div>
       </div>
     </div>

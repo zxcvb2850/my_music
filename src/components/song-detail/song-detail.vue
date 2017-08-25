@@ -1,5 +1,5 @@
 <template>
-    <transition name="slide">
+    <transition name="scale">
         <music-list :title="title" :bgImage="bgImage" :describe="describe" :songs="songs"></music-list>
     </transition>
 </template>
@@ -73,11 +73,13 @@
 </script>
 
 <style lang="less" scoped>
-    .slide-enter-active, .slide-leave-active {
+    .scale-enter-active, .scale-leave-active {
         transition: all 0.3s;
+        transform: scale(1,1);
     }
 
-    .slide-enter, .slide-leave-to {
-        transform: translate3d(100%, 0, 0);
+    .scale-enter, .scale-leave-to {
+        transform: scale(0,0);
+        opacity:0;
     }
 </style>

@@ -12,26 +12,26 @@
                 <div class="music-rec">
                     <div class="music-list radio">
                         <div class="icon-wrap">
-                            <span class="iconfont icon-radio"></span>
+                            <span class="icon icon-501"></span>
                         </div>
                         <h6 class="title">私人FM</h6>
                     </div>
                     <div class="music-list calendar">
                         <div class="icon-wrap icon-data">
-                            <span class="iconfont icon-calendar"></span>
+                            <span class="icon icon-calendar"></span>
                             <span class="date">{{newDate}}</span>
                         </div>
                         <h6 class="title">每日歌曲推荐</h6>
                     </div>
                     <div class="music-list rank">
                         <div class="icon-wrap">
-                            <span class="iconfont icon-ranking"></span>
+                            <span class="icon icon-ranking"></span>
                         </div>
                         <h6 class="title">云音乐热歌榜</h6>
                     </div>
                 </div>
                 <div class="song-list">
-                    <h2 class="list-title">推荐歌单<span>&gt;</span></h2>
+                    <h2 class="list-title">推荐歌单<span class="icon icon-right"></span></h2>
                     <ul class="music-list">
                         <li class="music-item" @click="selectItem(musicItem)" v-for="musicItem in recommendList">
                             <div class="img"><img v-lazy="musicItem.picUrl" :alt="musicItem.name"></div>
@@ -43,7 +43,7 @@
                     </div>
                 </div>
                 <div class="rxclusive-list">
-                    <h2 class="list-title">独家放送<span>&gt;</span></h2>
+                    <h2 class="list-title">独家放送<span class="icon icon-right"></span></h2>
                     <ul class="music-list" ref="getLastLi">
                         <li class="rxclusive-item" v-for="pushItem in rxclusivePush">
                             <div class="img"><img :src="pushItem.picUrl" :alt="pushItem.name"></div>
@@ -55,7 +55,7 @@
                     </div>
                 </div>
                 <div class="rec-mv-list">
-                    <h2 class="list-title">推荐MV<span>&gt;</span></h2>
+                    <h2 class="list-title">推荐MV<span class="icon icon-right"></span></h2>
                     <ul class="music-list" ref="getLastLi">
                         <li class="rec-mv-item" v-for="item in recommendMv">
                             <div class="img"><img :src="item.picUrl" :alt="item.name"></div>
@@ -201,7 +201,7 @@
                 -webkit-border-radius: 50%;
                 -moz-border-radius: 50%;
                 border-radius: 50%;
-                .iconfont {
+                .icon {
                     font-size: 30px;
                     color: @mainBg;
                 }

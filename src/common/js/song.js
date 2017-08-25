@@ -2,17 +2,51 @@
  * Created by 大白胡子 on 2017/6/27.
  */
 import {ERR_OK} from 'api/config'
-import api from 'api/index'
+import {getUrl, getLyric} from 'api/song'
 
 export default class Song {
-    constructor({id, singer, name, album, picUrl, url, lyric}) {
+    constructor({id, singer, name, album, picUrl}) {
         this.id = id
         this.singer = singer
         this.name = name
         this.album = album
         this.picUrl = picUrl
-        this.url = url
-        this.lyric = lyric
+    }
+
+    getUrl() {
+        if (this.url) {
+            return Promise.resolve(this.url)
+        }
+
+        return new Promise((resolve, reject) => {
+            getUrl(this.id).then((res) => {
+                if (res.code === ERR_OK) {
+                    this.url = res.data[0].url
+                    resolve(this.url)
+                } else {
+                    reject('no music url')
+                }
+            })
+        })
+    }
+
+    getLyric() {
+        if (this.lyric) {
+            return Promise.resolve(this.lyric)
+        }
+
+        return new Promise((resolve, reject) => {
+            getLyric(this.id).then((res) => {
+                res = res.data
+                console.log(res)
+                if (res.code === ERR_OK) {
+                    this.lyric = res.lrc.lyric
+                    resolve(this.lyric)
+                } else {
+                    reject('no music lyric')
+                }
+            })
+        })
     }
 }
 export function createSong(musicData) {
@@ -21,9 +55,7 @@ export function createSong(musicData) {
         singer: filterSinger(musicData.ar),
         name: musicData.name,
         album: musicData.al.name,
-        picUrl: musicData.al.picUrl,
-        url: getMusic(musicData.id, 'url'),
-        lyric: getMusic(musicData.id, 'lyric')
+        picUrl: musicData.al.picUrl
     })
 }
 
@@ -36,36 +68,4 @@ function filterSinger(singer) {
         ret.push(s.name)
     })
     return ret.join('/')
-}
-
-function getMusic(id, type) {
-    let url = []
-    let lyric = []
-
-    if (!id) {
-        return ''
-    }
-    api.getMusicUrl(id).then((res) => {
-        res = res.data
-        if (res.code === ERR_OK) {
-            url.push(res.data[0].url)
-        }
-    })
-    api.getLyricsMusic(id).then((res) => {
-        res = res.data
-        if (res.code === ERR_OK) {
-            lyric.push(res.lrc.lyric)
-        }
-    })
-
-    if (type === 'url') {
-        return url
-    }
-    if (type === 'lyric') {
-        return lyric
-    }
-}
-
-function musicLyric(id) {
-
 }

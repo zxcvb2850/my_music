@@ -1,7 +1,7 @@
 <template>
     <div class="music-list">
         <div class="back" @click="back">
-            <i class="iconfont icon-jiantouicon"></i>
+            <i class="icon icon-back"></i>
         </div>
         <h1 class="title" v-html="title"></h1>
         <div class="bg-image" ref="bgImage" :style="bgStyle">
@@ -19,7 +19,7 @@
             <div class="play-wrapper">
                 <div ref="playBtn" class="play" v-show="songs.length > 0">
                     <i class="icon-play"></i>
-                    <span class="text">随机播放全部</span>
+                    <span class="text"><i class="icon icon-suspendedzhuanhuan"></i>随机播放全部</span>
                 </div>
             </div>
         </div>
@@ -172,7 +172,7 @@
             line-height: @BackHeight - 5;
             text-align: center;
             z-index: 12;
-            .icon-jiantouicon {
+            .icon-back {
                 display: inline-block;
                 font-size: 14px;
                 color: @bgcolor;
@@ -181,7 +181,7 @@
         .title {
             position: absolute;
             top: 0;
-            left: @BackWidth;
+            left: @BackHeight;
             width: 90%;
             z-index: 12;
             line-height: 40px;
@@ -257,6 +257,10 @@
                     display: inline-block;
                     vertical-align: middle;
                     font-size: 12px;
+                    .icon{
+                        margin-left: -10px;
+                        margin-right: 10px;
+                    }
                 }
             }
             .filter {
