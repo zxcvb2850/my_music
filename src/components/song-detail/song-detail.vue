@@ -44,7 +44,6 @@
                     res = res.data;
                     if (res.code === ERR_OK) {
                         this.songs = this._normalizeSongs(res.playlist.tracks);
-                        console.log(res.playlist.tracks)
                         console.log(this.songs)
                     }
                 })

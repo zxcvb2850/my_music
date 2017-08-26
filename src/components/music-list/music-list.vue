@@ -95,8 +95,7 @@
             selectItem(item, index){
                 this.selectPlay({
                     list: this.songs,
-                    index: index,
-                    item: item
+                    index: index
                 })
             },
             ...mapActions([
