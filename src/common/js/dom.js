@@ -15,6 +15,7 @@ function hasClass(el, className) {
     return reg.test(el.className);
 }
 
+/*js自动识别各个浏览器的前缀*/
 let elementStyle = document.querySelector('div').style
 
 let vendor = (() => {

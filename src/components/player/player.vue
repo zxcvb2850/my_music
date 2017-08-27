@@ -39,7 +39,7 @@
                     <div class="progress-wrapper">
                         <span class="time time-ing">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
-                            <progress-bar :percent="percent"></progress-bar>
+                            <progress-bar :percent="percent" @percentChange="onPercentChange"></progress-bar>
                         </div>
                         <span class="time time-count">{{format(currentDuration)}}</span>
                     </div>
@@ -73,9 +73,9 @@
                     <p class="desc" v-html="currentSong.singer"></p>
                 </div>
                 <div class="control">
-                    <div class="progress-circle" :class="disable">
+                    <progress-circle :radius="radius" :percent="percent">
                         <i @click.stop="togglePlaying" class="icon icon-mini" :class="playIcon"></i>
-                    </div>
+                    </progress-circle>
                 </div>
                 <div class="control">
                     <i class="icon icon-menu"></i>
@@ -95,6 +95,7 @@
 <script>
     import animations from "create-keyframe-animation"
     import ProgressBar from "base/progress-bar/progress-bar"
+    import ProgressCircle from "base/progress-circle/progress-circle"
     import api from "api/index"
     import {ERR_OK} from "api/config"
     import {mapGetters, mapMutations} from "vuex"
@@ -108,7 +109,8 @@
             return {
                 songReady: false,
                 currentTime: 0,
-                currentDuration: 0
+                currentDuration: 0,
+                radius: 32
             }
         },
         watch: {
@@ -119,7 +121,7 @@
                      console.log(1)
                      })*/
                     this.$refs.audio.play()
-                    this.getLyric()
+                    //this.getLyric()
                 })
             },
             playing(newPlaying) {
@@ -240,11 +242,17 @@
 
                 return `${minter}:${second}`
             },
-            getLyric() {
-                this.currentSong.getLyric().then((lyric) => {
-                    //console.log(lyric)
-                })
+            onPercentChange(percent){
+                this.$refs.audio.currentTime = this.currentDuration * percent
+                if (!this.playing) {
+                    this.togglePlaying();
+                }
             },
+            /*getLyric() {
+             this.currentSong.getLyric().then((lyric) => {
+             //console.log(lyric)
+             })
+             },*/
             _getPosAndScale(){
                 const targetWidth = 40
                 const paddingLeft = 40
@@ -284,7 +292,8 @@
             ])
         },
         components: {
-            ProgressBar
+            ProgressBar,
+            ProgressCircle
         }
     }
 </script>
@@ -325,7 +334,7 @@
                 width: 100%;
                 height: 100%;
                 opacity: 0.6;
-                filter: blur(20px);
+                .blur(20px);
                 transform: scale(1.2);
                 z-index: -1;
             }
@@ -610,17 +619,15 @@
                 .progress-circle {
                     position: relative;
                 }
-                .icon {
-                    color: @mainBg;
-                }
                 .icon-mini {
+                    font-size: 32px;
                     position: absolute;
                     left: 0;
-                    top: -12px;
-                    text-align: right;
-                    font-size: 26px;
+                    top: 0;
+                    color: @opacityBg;
                 }
                 .icon-menu {
+                    color: @mainBg;
                     text-align: left;
                     font-size: 30px;
                 }

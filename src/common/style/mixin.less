@@ -14,6 +14,13 @@
   color: rgba(200, 200, 200, .5);
 }
 
+.blur(@px) {
+  -webkit-filter: blur(@px); /* Chrome, Opera */
+  -moz-filter: blur(@px);
+  -ms-filter: blur(@px);
+  filter: blur(@px);
+}
+
 .border-1px(@color) {
   position: relative;
   &:after {
@@ -43,6 +50,7 @@
 @tabHeight: 40px;
 @lineWidth: 26px;
 @mainBg: #ce3d3a;
+@opacityBg: rgba(206,61,58,.8);
 @bgcolor: #f2f4f5;
 @songListBg: #D7D8DA;
 @disabledColor: #b2b3b5;
