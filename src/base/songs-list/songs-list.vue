@@ -8,7 +8,7 @@
                     </div>
                     <div class="author">
                         <h2 class="name" v-html="song.name"></h2>
-                        <p class="singer">{{song.singer}}—{{song.album}}</p>
+                        <p class="singer">{{song.singer}}—<span v-show="song.album">{{song.album}}</span></p>
                     </div>
                 </div>
             </li>

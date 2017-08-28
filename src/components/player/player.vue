@@ -44,8 +44,8 @@
                         <span class="time time-count">{{format(currentDuration)}}</span>
                     </div>
                     <div class="operators">
-                        <div class="icon i-peripheral">
-                            <i class="icon icon-loop"></i>
+                        <div class="icon i-peripheral" @click="changMode">
+                            <i class="icon" :class="iconMode"></i>
                         </div>
                         <div class="icon i-next" :class="disable">
                             <i class="icon icon-prev" @click="prev"></i>
@@ -66,7 +66,7 @@
         <transition name="mini">
             <div class="mini-player" v-show="!fullScreen" @click="open">
                 <div class="icon-wrapper" :class="cdCls">
-                    <img width="40" height="40" :src="currentSong.picUrl">
+                    <img width="40" height="40" v-lazy="currentSong.picUrl">
                 </div>
                 <div class="text">
                     <h2 class="name" v-html="currentSong.name"></h2>
@@ -88,6 +88,7 @@
                 @canplay="ready"
                 @error="error"
                 @timeupdate="updateTime"
+                @ended="end"
         ></audio>
     </div>
 </template>
@@ -100,7 +101,8 @@
     import {ERR_OK} from "api/config"
     import {mapGetters, mapMutations} from "vuex"
     import {prefixStyle} from 'common/js/dom'
-    import {Zerofill} from 'common/js/common'
+    import {Zerofill, RandomArr, FindIndex} from 'common/js/common'
+    import {playMode} from 'common/js/config'
 
     const transform = prefixStyle('transform')
 
@@ -114,14 +116,13 @@
             }
         },
         watch: {
-            currentSong() {
+            currentSong(newSong, oldSong) {
+                if (newSong.id === oldSong.id) {
+                    return
+                }
                 this.$nextTick(() => {
-                    //捕获audio的异常
-                    /*this.$refs.audio.addEventListener('error', function () {
-                     console.log(1)
-                     })*/
                     this.$refs.audio.play()
-                    //this.getLyric()
+                    this.getLyric()
                 })
             },
             playing(newPlaying) {
@@ -186,6 +187,17 @@
 
                 this.setPlayingState(!this.playing)
             },
+            end(){
+                if (this.mode === playMode.loop) {
+                    this.sequence();
+                } else {
+                    this.next()
+                }
+            },
+            sequence(){
+                this.$refs.audio.currentTime = 0;
+                this.$refs.audio.play();
+            },
             prev(){
                 /*当歌曲地址正在获取时，禁止用户快速点击*/
                 if (!this.songReady) {
@@ -248,11 +260,30 @@
                     this.togglePlaying();
                 }
             },
-            /*getLyric() {
-             this.currentSong.getLyric().then((lyric) => {
-             //console.log(lyric)
-             })
-             },*/
+            changMode(){
+                const mode = (this.mode + 1) % 3;
+                this.setPlayMode(mode)
+
+                let list = null
+                if (mode === playMode.random) {
+                    list = RandomArr(this.sequenceList)
+                } else {
+                    list = this.sequenceList
+                }
+                this.resetCurrentIndex(list)
+                this.setPlayList(list)
+            },
+            resetCurrentIndex(list){
+                let index = FindIndex(list, this.currentSong);
+                this.setCurrentIndex(index)
+            },
+            getLyric() {
+                this.currentSong.getLyric().then((lyric) => {
+                    console.log(lyric)
+                }).catch((err)=>{
+                    consol.log(1234)
+                })
+            },
             _getPosAndScale(){
                 const targetWidth = 40
                 const paddingLeft = 40
@@ -267,7 +298,9 @@
             ...mapMutations({
                 setFullScreen: 'SET_FULL_SCREEN',
                 setPlayingState: 'SET_PLAYING_STATE',
-                setCurrentIndex: 'SET_CURRENT_INDEX'
+                setCurrentIndex: 'SET_CURRENT_INDEX',
+                setPlayMode: 'SET_PLAY_MODE',
+                setPlayList: 'SET_PLAYLIST'
             })
         },
         computed: {
@@ -283,12 +316,17 @@
             percent() {
                 return this.currentTime / this.currentDuration
             },
+            iconMode(){
+                return this.mode === playMode.sequence ? 'icon-loop' : this.mode === playMode.loop ? 'icon-loop_single' : 'icon-random'
+            },
             ...mapGetters([
                 'fullScreen',
                 'playList',
                 'currentSong',
                 'playing',
-                'currentIndex'
+                'currentIndex',
+                'mode',
+                'sequenceList'
             ])
         },
         components: {

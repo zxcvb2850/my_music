@@ -5,14 +5,14 @@ import {ERR_OK} from 'api/config'
 import {getUrl, getLyric} from 'api/song'
 
 export default class Song {
-    constructor({id, singer, name, album,alia, picUrl, url}) {
-        this.id = id
-        this.singer = singer
-        this.name = name
-        this.album = album
-        this.alia = alia
-        this.picUrl = picUrl
-        this.url = url
+    constructor({id, singer, name, album, alia, picUrl, url}) {
+        this.id = id                                    //音乐ID
+        this.singer = singer                            //歌手姓名
+        this.name = name                                //歌曲名字
+        this.album = album                              //专辑的名字
+        this.alia = alia                                //歌曲来自哪里
+        this.picUrl = picUrl                            //歌曲图片
+        this.url = url                                  //歌曲的URL
     }
 
     getLyric() {
@@ -23,8 +23,10 @@ export default class Song {
         return new Promise((resolve, reject) => {
             getLyric(this.id).then((res) => {
                 res = res.data
-                console.log(res)
                 if (res.code === ERR_OK) {
+                    if(res.lrc === undefined){
+                        reject('no music lyric')
+                    }
                     this.lyric = res.lrc.lyric
                     resolve(this.lyric)
                 } else {
@@ -36,7 +38,7 @@ export default class Song {
 }
 export function createSong(musicData) {
     function getUrlq() {
-        if(!musicData.id){
+        if (!musicData.id) {
             reject('no music URL')
         }
         return new Promise((resolve, reject) => {

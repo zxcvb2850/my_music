@@ -17,7 +17,7 @@
                 </div>
             </div>
             <div class="play-wrapper">
-                <div ref="playBtn" class="play" v-show="songs.length > 0">
+                <div ref="playBtn" class="play" v-show="songs.length > 0" @click="random">
                     <i class="icon-play"></i>
                     <span class="text"><i class="icon icon-suspendedzhuanhuan"></i>随机播放全部</span>
                 </div>
@@ -98,8 +98,14 @@
                     index: index
                 })
             },
+            random(){
+                this.randomPlay({
+                    list:this.songs
+                })
+            },
             ...mapActions([
-                'selectPlay'
+                'selectPlay',
+                'randomPlay'
             ])
         },
         watch: {
