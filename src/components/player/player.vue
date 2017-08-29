@@ -20,22 +20,31 @@
                     <p class="subtitle" v-html="currentSong.singer"></p>
                 </div>
                 <div class="middle">
-                    <div class="middle-l" ref="middleL">
+                    <div class="middle-l" ref="middleL" @click="showBtnLyric">
                         <div class="cd-wrapper" ref="cdWrapper">
                             <div class="cd" :class="cdCls">
                                 <img class="image" v-lazy="currentSong.picUrl">
                             </div>
                         </div>
                         <div class="playing-lyric-wrapper">
-                            <!--<div class="playing-lyric">{{playingLyric}}</div>-->
+                            <div class="playing-lyric"><!--{{playingLyric}}-->121313</div>
                         </div>
                     </div>
+                    <Scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines"
+                            :class="hideLyric">
+                        <div class="lyric-wrapper" @click="hideBtnLyric" ref="lyricWrapper" v-show="noLyric">
+                            <div v-if="currentLyric">
+                                <p ref="lyricLine"
+                                   class="text"
+                                   :class="{'current' : currentLineNum === index}"
+                                   v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
+                            </div>
+                        </div>
+                        <div class="lyric-wrapper" v-show="!noLyric"><p class="text current">暂无歌词</p></div>
+                    </Scroll>
+
                 </div>
                 <div class="bottom">
-                    <!--<div class="dot-wrapper">
-                        <span class="dot" :class="{'active':currentShow==='cd'}"></span>
-                        <span class="dot" :class="{'active':currentShow==='lyric'}"></span>
-                    </div>-->
                     <div class="progress-wrapper">
                         <span class="time time-ing">{{format(currentTime)}}</span>
                         <div class="progress-bar-wrapper">
@@ -95,14 +104,16 @@
 
 <script>
     import animations from "create-keyframe-animation"
+    import Lyric from "lyric-parser"
     import ProgressBar from "base/progress-bar/progress-bar"
     import ProgressCircle from "base/progress-circle/progress-circle"
+    import Scroll from "base/scroll/scroll"
     import api from "api/index"
     import {ERR_OK} from "api/config"
     import {mapGetters, mapMutations} from "vuex"
-    import {prefixStyle} from 'common/js/dom'
-    import {Zerofill, RandomArr, FindIndex} from 'common/js/common'
-    import {playMode} from 'common/js/config'
+    import {prefixStyle} from "common/js/dom"
+    import {Zerofill, RandomArr, FindIndex} from "common/js/common"
+    import {playMode} from "common/js/config"
 
     const transform = prefixStyle('transform')
 
@@ -112,7 +123,11 @@
                 songReady: false,
                 currentTime: 0,
                 currentDuration: 0,
-                radius: 32
+                currentLyric: null,
+                currentLineNum: 0,
+                radius: 32,
+                hideLyric: '',
+                noLyric: true
             }
         },
         watch: {
@@ -120,12 +135,18 @@
                 if (newSong.id === oldSong.id) {
                     return
                 }
+
+                if (this.currentLyric) {
+                    this.currentLyric.stop()
+                }
+
                 this.$nextTick(() => {
                     this.$refs.audio.play()
                     this.getLyric()
                 })
             },
             playing(newPlaying) {
+
                 const audio = this.$refs.audio
                 this.$nextTick(() => {
                     newPlaying ? audio.play() : audio.pause()
@@ -186,6 +207,11 @@
                 }
 
                 this.setPlayingState(!this.playing)
+
+                /*控制歌词同步暂停*/
+                if (this.currentLyric) {
+                    this.currentLyric.togglePlay()
+                }
             },
             end(){
                 if (this.mode === playMode.loop) {
@@ -197,6 +223,10 @@
             sequence(){
                 this.$refs.audio.currentTime = 0;
                 this.$refs.audio.play();
+
+                if (this.currentLyric) {
+                    this.currentLyric.seek(0)
+                }
             },
             prev(){
                 /*当歌曲地址正在获取时，禁止用户快速点击*/
@@ -215,7 +245,14 @@
                     this.togglePlaying()
                 }
 
-                this.songReady = false
+                this.songReady = false              //歌曲获取的时间
+                this.hideBtnLyric()                 //切歌时默认显示CD页
+
+                /*切歌时重置歌词部分*/
+                if (this.currentLyric) {
+                    this.currentLineNum = 0
+                    this.$refs.lyricList.scrollTo(0, 0, 100)
+                }
             },
             next(){
                 /*当歌曲地址正在获取时，禁止用户快速点击*/
@@ -234,7 +271,14 @@
                     this.togglePlaying()
                 }
 
-                this.songReady = false
+                this.songReady = false              //歌曲获取的时间
+                this.hideBtnLyric()                 //切歌时默认显示CD页
+
+                /*切歌时重置歌词部分*/
+                if (this.currentLyric) {
+                    this.currentLineNum = 0
+                    this.$refs.lyricList.scrollTo(0, 0, 100)
+                }
             },
             ready(){
                 this.songReady = true
@@ -255,9 +299,14 @@
                 return `${minter}:${second}`
             },
             onPercentChange(percent){
-                this.$refs.audio.currentTime = this.currentDuration * percent
+                const currentTime = this.currentDuration * percent
+                this.$refs.audio.currentTime = currentTime
                 if (!this.playing) {
                     this.togglePlaying();
+                }
+
+                if (this.currentLyric) {
+                    this.currentLyric.seek(currentTime * 1000)
                 }
             },
             changMode(){
@@ -278,11 +327,37 @@
                 this.setCurrentIndex(index)
             },
             getLyric() {
-                this.currentSong.getLyric().then((lyric) => {
-                    console.log(lyric)
-                }).catch((err)=>{
-                    consol.log(1234)
-                })
+                this.currentSong.getLyric()
+                    .then((lyric) => {
+                        let abc = lyric;
+                        this.noLyric = true
+                        this.currentLyric = new Lyric(lyric, this.handleLyric)
+                        if (this.playing) {
+                            this.currentLyric.play()
+                        }
+                        console.log(this.currentLyric)
+                    })
+                    .catch((err) => {
+                        this.noLyric = false
+                        console.log(err)
+                    })
+            },
+            handleLyric({lineNum, txt}){
+                this.currentLineNum = lineNum
+                if (lineNum > 5) {
+                    let lineEl = this.$refs.lyricLine[lineNum - 5]
+                    this.$refs.lyricList.scrollToElement(lineEl, 1000)
+                } else {
+                    this.$refs.lyricList.scrollTo(0, 0, 100)
+                }
+            },
+            showBtnLyric(){
+                this.$refs.middleL.style.opacity = 0
+                this.hideLyric = 'show-lyric'
+            },
+            hideBtnLyric(){
+                this.$refs.middleL.style.opacity = 1
+                this.hideLyric = ''
             },
             _getPosAndScale(){
                 const targetWidth = 40
@@ -331,7 +406,8 @@
         },
         components: {
             ProgressBar,
-            ProgressCircle
+            ProgressCircle,
+            Scroll
         }
     }
 </script>
@@ -421,6 +497,13 @@
                 bottom: 170px;
                 white-space: nowrap;
                 font-size: 0;
+                .fade-enter-active, .fade-leave-active {
+                    transition: all .35s;
+                    opacity: 1;
+                }
+                .fade-enter, .fade-leave {
+                    opacity: 0;
+                }
                 .middle-l {
                     display: inline-block;
                     vertical-align: top;
@@ -428,79 +511,82 @@
                     width: 100%;
                     height: 0;
                     padding-top: 80%;
-                }
-                .cd-wrapper {
-                    position: absolute;
-                    left: 10%;
-                    top: 0;
-                    width: 80%;
-                    height: 100%;
-                    &:before {
+                    .cd-wrapper {
                         position: absolute;
+                        left: 10%;
                         top: 0;
-                        left: 0;
-                        width: 100%;
-                        height: 100%;
-                        content: '';
-                        -webkit-box-sizing: border-box;
-                        -moz-box-sizing: border-box;
-                        box-sizing: border-box;
-                        border-radius: 50%;
-                        border: 50px solid rgba(255, 255, 255, .1);
-                        transform: scale(1.06);
-                    }
-                    .cd {
-                        width: 100%;
-                        height: 100%;
-                        box-sizing: border-box;
-                        border: 50px solid rgba(10, 10, 10, .8);
-                        border-radius: 50%;
-                        &.play {
-                            animation: rotate 20s linear infinite;
-                        }
-                        &.pause {
-                            animation-play-state: paused;
-                        }
-                        .image {
-                            position: absolute;
-                            left: 0;
-                            top: 0;
-                            width: 100%;
-                            height: 100%;
-                            border-radius: 50%;
-                        }
-                    }
-                    .playing-lyric-wrapper {
                         width: 80%;
-                        margin: 30px auto 0 auto;
-                        overflow: hidden;
-                        text-align: center;
-                        .playing-lyric {
-                            height: 20px;
-                            line-height: 20px;
-                            font-size: @fontSizeMin;
-                            color: @mainBg;
-                        }
-                        .middle-r {
-                            display: inline-block;
-                            vertical-align: top;
+                        height: 100%;
+                        &:before {
+                            position: absolute;
+                            top: 0;
+                            left: 0;
                             width: 100%;
                             height: 100%;
-                            overflow: hidden;
+                            content: '';
+                            -webkit-box-sizing: border-box;
+                            -moz-box-sizing: border-box;
+                            box-sizing: border-box;
+                            border-radius: 50%;
+                            border: 50px solid rgba(255, 255, 255, .1);
+                            transform: scale(1.06);
                         }
-                        .lyric-wrapper {
+                        .cd {
+                            width: 100%;
+                            height: 100%;
+                            box-sizing: border-box;
+                            border: 50px solid rgba(10, 10, 10, .8);
+                            border-radius: 50%;
+                            &.play {
+                                animation: rotate 20s linear infinite;
+                            }
+                            &.pause {
+                                animation-play-state: paused;
+                            }
+                            .image {
+                                position: absolute;
+                                left: 0;
+                                top: 0;
+                                width: 100%;
+                                height: 100%;
+                                border-radius: 50%;
+                            }
+                        }
+                        .playing-lyric-wrapper {
                             width: 80%;
-                            margin: 0 auto;
+                            margin: 30px auto 0 auto;
                             overflow: hidden;
                             text-align: center;
-                        }
-                        .text {
-                            line-height: 32px;
-                            color: @songListBg;
-                            font-size: @fontSizeMin;
-                            &.current {
+                            .playing-lyric {
+                                height: 20px;
+                                line-height: 20px;
+                                font-size: @fontSizeMin;
                                 color: @mainBg;
                             }
+                        }
+                    }
+                }
+                .middle-r {
+                    display: inline-block;
+                    vertical-align: top;
+                    width: 100%;
+                    height: 100%;
+                    overflow: hidden;
+                    &.show-lyric {
+                        transform: translateX(-100%);
+                    }
+                    .lyric-wrapper {
+                        width: 80%;
+                        margin: 0 auto;
+                        overflow: hidden;
+                        text-align: center;
+                    }
+                    .text {
+                        line-height: 32px;
+                        color: @disabledColor;
+                        font-size: @fontSizeMin;
+                        &.current {
+                            color: @bgcolor;
                         }
                     }
                 }

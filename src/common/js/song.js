@@ -24,11 +24,12 @@ export default class Song {
             getLyric(this.id).then((res) => {
                 res = res.data
                 if (res.code === ERR_OK) {
-                    if(res.lrc === undefined){
+                    if (res.lrc === undefined) {
                         reject('no music lyric')
+                    } else {
+                        this.lyric = res.lrc.lyric
+                        resolve(this.lyric)
                     }
-                    this.lyric = res.lrc.lyric
-                    resolve(this.lyric)
                 } else {
                     reject('no music lyric')
                 }
