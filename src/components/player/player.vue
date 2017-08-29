@@ -83,7 +83,7 @@
                 </div>
                 <div class="control">
                     <progress-circle :radius="radius" :percent="percent">
-                        <i @click.stop="togglePlaying" class="icon icon-mini" :class="playIcon"></i>
+                        <i @click.stop="togglePlaying" class="icon icon-mini" :class="playMiniIcon"></i>
                     </progress-circle>
                 </div>
                 <div class="control">
@@ -335,7 +335,6 @@
                         if (this.playing) {
                             this.currentLyric.play()
                         }
-                        console.log(this.currentLyric)
                     })
                     .catch((err) => {
                         this.noLyric = false
@@ -381,6 +380,9 @@
         computed: {
             playIcon() {
                 return this.playing ? 'icon-btn_suspend' : 'icon-suspendedzhuanhuan'
+            },
+            playMiniIcon(){
+                return this.playing ? 'icon-suspend' : 'icon-start1'
             },
             cdCls() {
                 return this.playing ? 'play' : 'play pause'
@@ -744,11 +746,19 @@
                     position: relative;
                 }
                 .icon-mini {
-                    font-size: 32px;
                     position: absolute;
                     left: 0;
                     top: 0;
-                    color: @opacityBg;
+                    color: @mainBg;
+                    width: 32px;
+                    line-height: 32px;
+                    text-align: center;
+                    font-size: 24px;
+                    &.icon-start1 {
+                        font-size: 20px;
+                        width: 36px;
+                        line-height: 34px;
+                    }
                 }
                 .icon-menu {
                     color: @mainBg;
