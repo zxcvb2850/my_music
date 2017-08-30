@@ -1,11 +1,13 @@
 <template>
-    <div class="song-sheet">
+    <div class="song-sheet" ref="sheetWrapper">
         <div class="sheet-content" ref="sheet">
             <scroll
                     :data="fineSong"
                     :pullUp="pullUp"
                     @pullUp="loopRefresh"
-                    class="sheet-wrapper">
+                    class="sheet-wrapper"
+                    ref="sheetList"
+            >
                 <ul>
                     <li v-for="item in fineSong" class="sheet-item" @click="selectItem(item)">
                         <div class="item-img">
@@ -37,9 +39,11 @@
     import BScroll from 'better-scroll'
     import Loading from 'base/loading/loading'
     import Scroll from 'base/scroll/scroll'
-    import {mapMutations} from 'vuex'
+    import {mapMutations} from "vuex"
+    import {playlistMixin} from "common/js/mixin"
 
     export default {
+        mixins: [playlistMixin],
         data(){
             return {
                 fineSong: [],
@@ -54,6 +58,11 @@
             this._getFineSong();
         },
         methods: {
+            handlePlaylist(playlist){
+                const bottom = playlist.length>0?'60px':''
+                this.$refs.sheetWrapper.style.bottom = bottom
+                this.$refs.sheetList.refresh()
+            },
             _getFineSong(){
                 api.getFineSong(this.limit).then((res) => {
                     res = res.data;
@@ -74,7 +83,7 @@
                                 this.more = "查看更多";
                             }, 20)
                         }
-                    }).catch((err)=>{
+                    }).catch((err) => {
                         console.log(err)
                         console.log("获取歌单列表数据失败")
                     })

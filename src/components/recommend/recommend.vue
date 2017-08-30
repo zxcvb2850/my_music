@@ -74,13 +74,15 @@
 
 <script>
     import api from "api";
-    import {ERR_OK} from 'api/config'
+    import {ERR_OK} from "api/config"
     import Slider from "base/silder/silder"
     import Scroll from "base/scroll/scroll"
     import Loading from "base/loading/loading"
     import {mapMutations} from "vuex"
+    import {playlistMixin} from "common/js/mixin"
 
     export default {
+        mixins: [playlistMixin],
         data(){
             return {
                 recommends: [],
@@ -98,6 +100,11 @@
             this._getRecommendMv();
         },
         methods: {
+            handlePlaylist(playlist){
+                const bottom = playlist.length > 0 ? '60px' : ''
+                this.$refs.recommend.style.bottom = bottom
+                this.$refs.scroll.refresh()
+            },
             _getBanner(){
                 api.getBannerUrl().then((res) => {
                     res = res.data;
@@ -225,7 +232,7 @@
         }
         .song-list, .rxclusive-list, .rec-mv-list {
             position: relative;
-            margin-top: 30px;
+            margin-top: 10px;
             .list-title {
                 padding-left: 6px;
                 font-weight: normal;
@@ -245,7 +252,7 @@
                     margin-top: 10px;
                     display: inline-block;
                     width: 33%;
-                    height: 150px;
+                    //height: 10px;
                     &:nth-child(3n+1) {
                         float: left;
                     }
@@ -265,7 +272,7 @@
                     font-weight: normal;
                     font-size: 10px;
                     height: 30px;
-                    line-height: 12px;
+                    line-height: 16px;
                     text-align: left;
                     color: #000;
                 }
@@ -276,6 +283,9 @@
                 display: inline-block;
                 margin: 4px 0;
                 width: 49%;
+                .music-title{
+                    height:auto;
+                }
                 &:first-child {
                     float: left;
                 }
@@ -291,13 +301,16 @@
             margin-top: 0;
             overflow: hidden;
             .music-list {
-                padding: 4px 0;
+                padding: 10px 0;
             }
             .rec-mv-item {
+                .music-title{
+                    height:auto;
+                }
                 float: left;
                 width: 49%;
-                &:nth-child(2n+2) {
-                    float: right;
+                img {
+                    width: 100%;
                 }
             }
         }

@@ -110,7 +110,6 @@
     import ProgressBar from "base/progress-bar/progress-bar"
     import ProgressCircle from "base/progress-circle/progress-circle"
     import Scroll from "base/scroll/scroll"
-    import api from "api/index"
     import {ERR_OK} from "api/config"
     import {mapGetters, mapMutations} from "vuex"
     import {prefixStyle} from "common/js/dom"
@@ -245,6 +244,7 @@
                     }
                     this.setCurrentIndex(index)
                 }
+
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
@@ -274,6 +274,7 @@
                     }
                     this.setCurrentIndex(index)
                 }
+
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
