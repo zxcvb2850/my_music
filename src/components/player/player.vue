@@ -27,7 +27,8 @@
                             </div>
                         </div>
                         <div class="playing-lyric-wrapper">
-                            <div class="playing-lyric"><!--{{playingLyric}}-->121313</div>
+                            <div class="playing-lyric" v-show="noLyric">{{playingLyric}}</div>
+                            <div class="playing-lyric" v-show="!noLyric">暂无歌词</div>
                         </div>
                     </div>
                     <Scroll class="middle-r" ref="lyricList" :data="currentLyric && currentLyric.lines"
@@ -40,7 +41,8 @@
                                    v-for="(line,index) in currentLyric.lines">{{line.txt}}</p>
                             </div>
                         </div>
-                        <div class="lyric-wrapper" v-show="!noLyric"><p class="text current">暂无歌词</p></div>
+                        <div class="lyric-wrapper no-lyric" @click="hideBtnLyric" v-show="!noLyric"><p
+                                class="text current">暂无歌词</p></div>
                     </Scroll>
 
                 </div>
@@ -127,7 +129,8 @@
                 currentLineNum: 0,
                 radius: 32,
                 hideLyric: '',
-                noLyric: true
+                noLyric: true,
+                playingLyric: ''
             }
         },
         watch: {
@@ -140,10 +143,10 @@
                     this.currentLyric.stop()
                 }
 
-                this.$nextTick(() => {
+                setTimeout(() => {
                     this.$refs.audio.play()
                     this.getLyric()
-                })
+                }, 1000)
             },
             playing(newPlaying) {
 
@@ -233,13 +236,15 @@
                 if (!this.songReady) {
                     return
                 }
-
-                let index = this.currentIndex - 1
-                if (index === -1) {
-                    index = this.currentIndex.length - 1
+                if (this.playList.length === 1) {
+                    this.sequence()
+                } else {
+                    let index = this.currentIndex - 1
+                    if (index === -1) {
+                        index = this.playList.length - 1
+                    }
+                    this.setCurrentIndex(index)
                 }
-                this.setCurrentIndex(index)
-
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
@@ -260,12 +265,15 @@
                     return
                 }
 
-                let index = this.currentIndex + 1
-                if (index === this.currentIndex.length) {
-                    index = 0
+                if (this.playList.length === 1) {
+                    this.sequence()
+                } else {
+                    let index = this.currentIndex + 1
+                    if (index === this.playList.length) {
+                        index = 0
+                    }
+                    this.setCurrentIndex(index)
                 }
-                this.setCurrentIndex(index)
-
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
@@ -337,8 +345,9 @@
                         }
                     })
                     .catch((err) => {
+                        this.currentLyric = null
+                        this.playingLyric = ''
                         this.noLyric = false
-                        console.log(err)
                     })
             },
             handleLyric({lineNum, txt}){
@@ -349,6 +358,8 @@
                 } else {
                     this.$refs.lyricList.scrollTo(0, 0, 100)
                 }
+                /*cd页面的歌词*/
+                this.playingLyric = txt
             },
             showBtnLyric(){
                 this.$refs.middleL.style.opacity = 0
@@ -554,17 +565,17 @@
                                 border-radius: 50%;
                             }
                         }
-                        .playing-lyric-wrapper {
-                            width: 80%;
-                            margin: 30px auto 0 auto;
-                            overflow: hidden;
-                            text-align: center;
-                            .playing-lyric {
-                                height: 20px;
-                                line-height: 20px;
-                                font-size: @fontSizeMin;
-                                color: @mainBg;
-                            }
+                    }
+                    .playing-lyric-wrapper {
+                        width: 80%;
+                        margin: 30px auto 0 auto;
+                        overflow: hidden;
+                        text-align: center;
+                        .playing-lyric {
+                            height: 20px;
+                            line-height: 20px;
+                            font-size: @fontSizeMin;
+                            color: @bgcolor;
                         }
                     }
                 }
@@ -582,6 +593,9 @@
                         margin: 0 auto;
                         overflow: hidden;
                         text-align: center;
+                        &.no-lyric {
+                            min-height: 500px;
+                        }
                     }
                     .text {
                         line-height: 32px;

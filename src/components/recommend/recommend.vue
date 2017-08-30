@@ -245,7 +245,7 @@
                     margin-top: 10px;
                     display: inline-block;
                     width: 33%;
-                    height: 10px;
+                    height: 150px;
                     &:nth-child(3n+1) {
                         float: left;
                     }
