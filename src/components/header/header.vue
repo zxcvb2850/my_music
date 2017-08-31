@@ -24,11 +24,12 @@
                 </div>
             </div>
         </transition>
-        <!--<search-page ref="searchPage"></search-page>-->
+        <search-page ref="searchPage"></search-page>
     </div>
 </template>
 
 <script>
+    import SearchPage from "components/header/searchPage"
 
     export default {
         data(){
@@ -47,12 +48,15 @@
             hideMenu(){
                 this.isNavMenu = !this.isNavMenu;
             }
+        },
+        components: {
+            SearchPage
         }
     }
 </script>
 
 <style lang="less" scoped>
-    @import "../../common/style/index";
+    @import "~common/style/index";
 
     .header {
         position: relative;

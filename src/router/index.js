@@ -44,7 +44,13 @@ const routers = new Router({
         {
             path: '/rankingList',
             name: '排行榜',
-            component: RankingList
+            component: RankingList,
+            children: [
+                {
+                    path: ':id',
+                    component: SongDetail
+                }
+            ]
         }
     ],
     linkActiveClass: "active"

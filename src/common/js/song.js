@@ -2,7 +2,7 @@
  * Created by 大白胡子 on 2017/6/27.
  */
 import {ERR_OK} from 'api/config'
-import {getUrl, getLyric} from 'api/song'
+import {getUrl, getLyric, getRank} from 'api/song'
 
 export default class Song {
     constructor({id, singer, name, album, alia, picUrl, url}) {
@@ -81,4 +81,18 @@ function filterSinger(singer) {
         ret.push(s.name)
     })
     return ret.join('/')
+}
+
+export function getRankList(id) {
+    return new Promise((resolve, reject) => {
+        getRank(id).then((res) => {
+            if (res.code === ERR_OK) {
+                resolve(res)
+            } else {
+                reject('no rank list')
+            }
+        }).catch((err) => {
+            reject('no rank list')
+        })
+    })
 }

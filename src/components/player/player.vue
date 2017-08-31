@@ -252,6 +252,7 @@
 
                 this.songReady = false              //歌曲获取的时间
                 this.hideBtnLyric()                 //切歌时默认显示CD页
+                this.playingLyric = ''              //歌词默认显示空
 
                 /*切歌时重置歌词部分*/
                 if (this.currentLyric) {
@@ -282,6 +283,7 @@
 
                 this.songReady = false              //歌曲获取的时间
                 this.hideBtnLyric()                 //切歌时默认显示CD页
+                this.playingLyric = ''              //歌词默认显示空
 
                 /*切歌时重置歌词部分*/
                 if (this.currentLyric) {
@@ -338,7 +340,6 @@
             getLyric() {
                 this.currentSong.getLyric()
                     .then((lyric) => {
-                        let abc = lyric;
                         this.noLyric = true
                         this.currentLyric = new Lyric(lyric, this.handleLyric)
                         if (this.playing) {

@@ -1,6 +1,6 @@
 <template>
     <transition name="scale">
-        <music-list :title="title" :bgImage="bgImage" :describe="describe" :songs="songs"></music-list>
+        <music-list :title="title" :rank="rank" :bgImage="bgImage" :describe="describe" :songs="songs"></music-list>
     </transition>
 </template>
 
@@ -18,6 +18,9 @@
             },
             bgImage(){
                 return this.imageUrl()
+            },
+            rank(){
+                return this.singer.rank
             },
             describe(){
                 return this.singer.copywriter
@@ -74,11 +77,11 @@
 <style lang="less" scoped>
     .scale-enter-active, .scale-leave-active {
         transition: all 0.3s;
-        transform: scale(1,1);
+        transform: scale(1, 1);
     }
 
     .scale-enter, .scale-leave-to {
-        transform: scale(0,0);
-        opacity:0;
+        transform: scale(0, 0);
+        opacity: 0;
     }
 </style>

@@ -4,7 +4,7 @@
             <li class="item" v-for="(song, index) in songs" @click="selectItem(song, index)">
                 <div class="content">
                     <div class="serial">
-                        <p class="number">{{index + 1}}</p>
+                        <p class="number" :class="getRankCls(index)">{{index + 1}}</p>
                     </div>
                     <div class="author">
                         <h2 class="name" v-html="song.name"></h2>
@@ -21,11 +21,20 @@
             songs: {
                 type: Array,
                 default: []
+            },
+            rank: {
+                type: Boolean,
+                default: false
             }
         },
-        methods:{
-            selectItem(item,index){
-                this.$emit('select',item,index)
+        methods: {
+            selectItem(item, index){
+                this.$emit('select', item, index)
+            },
+            getRankCls(index){
+                if (this.rank) {
+                    return index <= 2 ? 'red' : ''
+                }
             }
         }
     }
@@ -53,6 +62,9 @@
                     .number {
                         color: @textColor;
                         font-size: @fontSizeMin;
+                        &.red {
+                            color: @mainBg;
+                        }
                     }
                 }
                 .author {

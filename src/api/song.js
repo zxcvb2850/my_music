@@ -14,3 +14,10 @@ export function getLyric(id){
         return Promise.resolve(res)
     })
 }
+
+/*获取排行榜*/
+export function getRank(id){
+    return api.getRankingList(id).then((res)=>{
+        return Promise.resolve(res.data)
+    })
+}

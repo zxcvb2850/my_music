@@ -32,7 +32,7 @@
                 @scroll="scroll"
                 ref="list">
             <div class="songs-list-wrapper">
-                <songs-list :songs="songs" @select="selectItem"></songs-list>
+                <songs-list :rank="rank" :songs="songs" @select="selectItem"></songs-list>
             </div>
             <div v-show="!songs.length" class="loading-container">
                 <loading></loading>
@@ -67,6 +67,10 @@
             describe: {
                 type: String,
                 default: ''
+            },
+            rank: {
+                type: Boolean,
+                defaule: false
             },
             songs: {
                 type: Array,
