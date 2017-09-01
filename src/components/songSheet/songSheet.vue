@@ -59,7 +59,7 @@
         },
         methods: {
             handlePlaylist(playlist){
-                const bottom = playlist.length>0?'60px':''
+                const bottom = playlist.length > 0 ? '60px' : ''
                 this.$refs.sheetWrapper.style.bottom = bottom
                 this.$refs.sheetList.refresh()
             },
@@ -93,7 +93,10 @@
                 this.$router.push({
                     path: `songSheet/${item.id}`
                 })
-                this.setSinger(item)
+                setTimeout(() => {
+                    this.setSinger(item)
+                }, 200)
+
             },
             ...mapMutations({
                 setSinger: 'SET_SINGER'

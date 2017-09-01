@@ -9,6 +9,7 @@ const apiMusic = {
   exclusivePush: "/personalized/privatecontent",   //独家推送,没有参数
   fineSong: "/top/playlist/highquality",           //获取精品歌单，参数?limit=30;
   songDetails: "/playlist/detail",                 //获取歌单详细信息，参数?id=;歌单的id
+  musicDetails: "/song/detail",                //获取音乐的详细信息，参数?ids= , /*多个参数用逗号隔开*/
   musicUrl: "/music/url",                          //获取音乐的url，参数?id= , /*多个参数用逗号隔开*/
   searchMusic: "/search",                          //搜索音乐，参数?keywords=;可以是汉字
   lyricsMusic: "/lyric",                           //获取音乐的歌词，参数?id=;音乐的id
@@ -53,6 +54,7 @@ export const RecommendMv = API_ROOT.concat(apiMusic.recommendMv);
 export const RxclusivePush = API_ROOT.concat(apiMusic.exclusivePush);
 export const FineSong = API_ROOT.concat(apiMusic.fineSong);
 export const SongDetails = API_ROOT.concat(apiMusic.songDetails);
+export const MusicDetails = API_ROOT.concat(apiMusic.musicDetails);
 export const MusicUrl = API_ROOT.concat(apiMusic.musicUrl);
 export const SearchMusic = API_ROOT.concat(apiMusic.searchMusic);
 export const LyricsMusic = API_ROOT.concat(apiMusic.lyricsMusic);

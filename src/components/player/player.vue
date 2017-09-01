@@ -115,9 +115,7 @@
     import {prefixStyle} from "common/js/dom"
     import {Zerofill, RandomArr, FindIndex} from "common/js/common"
     import {playMode} from "common/js/config"
-
     const transform = prefixStyle('transform')
-
     export default {
         data(){
             return {
@@ -140,14 +138,12 @@
                 if (newSong.id === oldSong.id) {
                     return
                 }
-
                 if (this.currentLyric) {
                     this.currentLyric.stop()
                     this.currentTime = 0
                     this.playingLyric = ''
                     this.currentLineNum = 0
                 }
-
                 clearTimeout(this.timer)
                 this.timer = setTimeout(() => {
                     this.$refs.audio.play()
@@ -170,7 +166,6 @@
             },
             enter(el, done){
                 const {x, y, scale} = this._getPosAndScale()
-
                 let animation = {
                     0: {
                         transform: `translate3d(${x}px,${y}px,0) scale(${scale})`
@@ -182,7 +177,6 @@
                         transform: `translate3d(0,0,0) scale(1)`
                     }
                 }
-
                 animations.registerAnimation({              //JS自定义动画
                     name: 'move',                           //动画名称
                     animation: animation,                    //js名称
@@ -191,7 +185,6 @@
                         easing: 'linear'                    //线性缓动
                     }
                 })
-
                 animations.runAnimation(this.$refs.cdWrapper, 'move', done)
             },
             afterEnter(){
@@ -213,9 +206,7 @@
                 if (!this.songReady) {
                     return
                 }
-
                 this.setPlayingState(!this.playing)
-
                 /*控制歌词同步暂停*/
                 if (this.currentLyric) {
                     this.currentLyric.togglePlay()
@@ -231,7 +222,6 @@
             sequence(){
                 this.$refs.audio.currentTime = 0;
                 this.$refs.audio.play();
-
                 if (this.currentLyric) {
                     this.currentLyric.seek(0)
                 }
@@ -250,16 +240,13 @@
                     }
                     this.setCurrentIndex(index)
                 }
-
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
                 }
-
                 this.songReady = false              //歌曲获取的时间
                 this.hideBtnLyric()                 //切歌时默认显示CD页
                 this.playingLyric = ''              //歌词默认显示空
-
                 /*切歌时重置歌词部分*/
                 if (this.currentLyric) {
                     this.currentLineNum = 0
@@ -271,7 +258,6 @@
                 if (!this.songReady) {
                     return
                 }
-
                 if (this.playList.length === 1) {
                     this.sequence()
                 } else {
@@ -281,16 +267,13 @@
                     }
                     this.setCurrentIndex(index)
                 }
-
                 /*当处于暂停状态时切换自动播放*/
                 if (!this.playing) {
                     this.togglePlaying()
                 }
-
                 this.songReady = false              //歌曲获取的时间
                 this.hideBtnLyric()                 //切歌时默认显示CD页
                 this.playingLyric = ''              //歌词默认显示空
-
                 /*切歌时重置歌词部分*/
                 if (this.currentLyric) {
                     this.currentLineNum = 0
@@ -312,7 +295,6 @@
                 interval = interval | 0
                 let minter = Zerofill(interval / 60 | 0)
                 let second = Zerofill(interval % 60)
-
                 return `${minter}:${second}`
             },
             onPercentChange(percent){
@@ -321,7 +303,6 @@
                 if (!this.playing) {
                     this.togglePlaying();
                 }
-
                 if (this.currentLyric) {
                     this.currentLyric.seek(currentTime * 1000)
                 }
@@ -329,7 +310,6 @@
             changMode(){
                 const mode = (this.mode + 1) % 3;
                 this.setPlayMode(mode)
-
                 let list = null
                 if (mode === playMode.random) {
                     list = RandomArr(this.sequenceList)
@@ -435,9 +415,7 @@
 
 <style lang="less" scoped>
     @import "~common/style/index";
-
     @lineHeight: 30px;
-
     .player {
         .normal-player {
             position: fixed;
@@ -792,7 +770,6 @@
             }
         }
     }
-
     @keyframes rotate {
         0% {
             -webkit-transform: rotate(0);

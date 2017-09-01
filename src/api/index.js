@@ -11,6 +11,7 @@ import {
     RxclusivePush,
     FineSong,
     SongDetails,
+    MusicDetails,
     MusicUrl,
     SearchMusic,
     LyricsMusic,
@@ -56,6 +57,15 @@ export default {
         return axios.get(SongDetails, {
             params: {
                 id: id
+            }
+        })
+    },
+
+    //获取音乐的详细信息，参数?ids= , /*多个参数用逗号隔开*/
+    getMusicDetails(id){
+        return axios.get(MusicDetails, {
+            params: {
+                ids: id
             }
         })
     },
@@ -165,7 +175,7 @@ export default {
         })
     },
 
-    //排行榜
+    //排行榜，参数idx=;排行榜的ID
     getRankingList(id){
         return axios.get(RankingList, {
             params: {

@@ -10,6 +10,7 @@
                            v-model="searchText" throttle
                            @blur="showBorder = !showBorder"
                            @focus="showBorder=false"
+                           ref="searchText"
                            placeholder="请输入歌名，歌手">
                     <!--search的渐变下边框-->
                     <span class="search-border" :class="showBorder?'search-border-blur':'search-border-focus'"></span>
@@ -20,6 +21,8 @@
                     :data="searchList"
                     :pullUp="pullUp"
                     @pullUp="searchMore"
+                    :beforeScroll="beforeScroll"
+                    @beforeScroll="blurInput"
                     class="search-list"
                     ref="search"
             >
@@ -42,6 +45,7 @@
     import Loading from "base/loading/loading"
     import {playlistMixin} from "common/js/mixin"
     import {createSong} from "common/js/song"
+    import {debounce} from "common/js/common"
     import {mapActions} from "vuex"
 
     export default {
@@ -52,12 +56,27 @@
                 showBorder: true,
                 searchText: '',
                 searchList: [],
+                musicDetails: [],
                 limit: 20,
                 pullUp: true,                 //上拉刷新
+                beforeScroll: true,
                 more: "查看更多",
                 imgSrc: require('../../assets/loading.gif'),
                 hasMore: true
             }
+        },
+        created(){
+            this.$watch('searchText', debounce((newText) => {
+                if (newText === '') {
+                    this.limit = 20
+                    this.more = ''
+                } else {
+                    this.more = '查看更多'
+                    this.limit = 20
+                    this.$refs.search.scrollTo(0, 0)
+                    this.search()
+                }
+            }, 500))
         },
         methods: {
             handlePlaylist(playlist){
@@ -91,10 +110,17 @@
                 this.hasMore = true
                 api.getSearchMusic(this.searchText, this.limit).then((res) => {
                     res = res.data
+                    console.log(res)
                     if (res.code === ERR_OK) {
-                        this.searchList = res.result.songs
-                        console.log(this.searchList)
-                        this._checkMore(res.result)
+                        if (res.result.songCount !== 0) {
+                            this.searchList = res.result.songs
+                            if (this.searchList.length > 0) {
+                                this._checkMore(res.result)
+                            }
+                        } else {
+                            this.searchList = []
+                            this.more = '暂无数据'
+                        }
                     }
                 }).catch((err) => {
                     console.log(err)
@@ -110,14 +136,19 @@
                 api.getSearchMusic(this.searchText, this.limit).then((res) => {
                     res = res.data
                     if (res.code === ERR_OK) {
-                        console.log(res.result.songs)
-                        this.searchList = res.result.songs
-                        this._checkMore(res.result)
-                        if (this.limit > res.result.songCount) {
-                            this.more = "客官,小的只能找到这么多了^_^"
+                        if (res.result.songCount) {
+                            this.searchList = res.result.songs
+                            this._checkMore(res.result)
+                            if (this.limit > res.result.songCount) {
+                                this.more = "客官,小的只能找到这么多了^_^"
+                            } else {
+                                this.more = "查看更多"
+                            }
                         } else {
-                            this.more = "查看更多"
+                            this.searchList = []
+                            this.more = '暂无数据'
                         }
+
 
                     }
                 }).catch((err) => {
@@ -126,11 +157,27 @@
                 })
             },
             selectItem(song){
-                if(song.id){
-
+                if (song.id) {
+                    api.getMusicDetails(song.id).then((res) => {
+                        res = res.data
+                        if (res.code === ERR_OK) {
+                            this.musicDetails = this._normalizeSongs(res.songs)
+                        }
+                    }).catch((err) => {
+                        console.log(err)
+                        console.log("数据获取失败")
+                    })
                 }
-
-                //this.insertSong(song)
+                setTimeout(() => {
+                    if (this.musicDetails[0].id) {
+                        this.insertSong(this.musicDetails[0])
+                    } else {
+                        console.log("数据出错啦")
+                    }
+                }, 300)
+            },
+            blurInput(){
+                this.$refs.searchText.blur()
             },
             _checkMore(data){
                 const song = data.songs
@@ -139,11 +186,10 @@
                 }
             },
             _normalizeSongs(list){
-                console.log(list)
                 let ret = [];
                 list.forEach((musicData) => {
                     if (musicData.id) {
-                        ret.push((musicData));
+                        ret.push(createSong(musicData));
                     }
                 })
                 return ret;
@@ -151,17 +197,6 @@
             ...mapActions([
                 'insertSong'
             ])
-        },
-        watch: {
-            searchText(){
-                if (this.searchText == '') {
-                    this.limit = 20
-                } else {
-                    this.limit = 20
-                    this.$refs.search.scrollTo(0, 0)
-                    this.search()
-                }
-            }
         },
         components: {
             Scroll,

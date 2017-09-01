@@ -32,6 +32,10 @@
             pullDown: {
                 type: Boolean,
                 default: false
+            },
+            beforeScroll: {
+                type: Boolean,
+                default: false
             }
         },
         data(){
@@ -80,6 +84,12 @@
                         if (pos.y > 50) {
                             this.$emit('pullDown');
                         }
+                    })
+                }
+                //
+                if(this.beforeScroll){
+                    this.scroll.on('beforeScrollStart',()=>{
+                        this.$emit('beforeScroll')
                     })
                 }
             },
