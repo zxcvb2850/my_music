@@ -1,6 +1,6 @@
 <template>
     <transition name="slow">
-        <div class="search-page" v-if="isSearchPage">
+        <div class="search-page" v-show="isSearchPage">
             <div class="head-wrapper">
                 <div class="back-wrapper">
                     <span class="icon icon-back search-back" @click="backIndex"></span>
@@ -19,14 +19,16 @@
             <scroll
                     :data="searchList"
                     :pullUp="pullUp"
-                    @pullUp="loopRefresh"
+                    @pullUp="searchMore"
                     class="search-list"
+                    ref="search"
             >
                 <ul>
-                    <li class="list" v-for="song in searchList">
+                    <li class="list" v-for="song in searchList" @click="selectItem(song)">
                         <h3 class="name">{{song.name}}</h3>
                         <p class="singer">{{filterSinger(song.artists)}}-{{song.album.name}}</p>
                     </li>
+                    <p class="more" v-html="more"></p>
                 </ul>
             </scroll>
         </div>
@@ -38,8 +40,12 @@
     import {ERR_OK} from "api/config"
     import Scroll from "base/scroll/scroll"
     import Loading from "base/loading/loading"
+    import {playlistMixin} from "common/js/mixin"
+    import {createSong} from "common/js/song"
+    import {mapActions} from "vuex"
 
     export default {
+        mixins: [playlistMixin],
         data(){
             return {
                 isSearchPage: false,
@@ -47,14 +53,23 @@
                 searchText: '',
                 searchList: [],
                 limit: 20,
-                pullUp: true                 //上拉刷新
+                pullUp: true,                 //上拉刷新
+                more: "查看更多",
+                imgSrc: require('../../assets/loading.gif'),
+                hasMore: true
             }
         },
         methods: {
+            handlePlaylist(playlist){
+                const bottom = playlist.length > 0 ? '60px' : '0'
+                this.$refs.search.$el.style.bottom = bottom
+                this.$refs.search.refresh()
+            },
             searchShow(){
                 this.isSearchPage = true;
             },
             backIndex(){
+                this.searchList = []
                 this.isSearchPage = !this.isSearchPage;
                 this.searchText = '';
             },
@@ -71,38 +86,80 @@
                 })
                 return ret.join('/')
             },
-            loopRefresh(){
-                this.limit += 5;
-                console.log(this.limit)
-                let nowLimit = this.limit;
-                setTimeout(() => {
-                    api.getSearchMusic(this.searchText, this.limit).then((res) => {
-                        res = res.data
-                        if (res.code === ERR_OK) {
-                            this.searchList = res.result.songs
-                            if (nowLimit > res.result.songs.length) {
-                                console.log("就这么多了")
-                            }
+            search(){
+                this.limit = 20             //归位
+                this.hasMore = true
+                api.getSearchMusic(this.searchText, this.limit).then((res) => {
+                    res = res.data
+                    if (res.code === ERR_OK) {
+                        this.searchList = res.result.songs
+                        console.log(this.searchList)
+                        this._checkMore(res.result)
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                    this.more = '暂无数据'
+                })
+            },
+            searchMore(){
+                if (!this.hasMore) {
+                    return
+                }
+                this.limit += 10;
+                this.more = `加载中...<img class="more-loading" width="15" height="15" src='${this.imgSrc}' />`;
+                api.getSearchMusic(this.searchText, this.limit).then((res) => {
+                    res = res.data
+                    if (res.code === ERR_OK) {
+                        console.log(res.result.songs)
+                        this.searchList = res.result.songs
+                        this._checkMore(res.result)
+                        if (this.limit > res.result.songCount) {
+                            this.more = "客官,小的只能找到这么多了^_^"
+                        } else {
+                            this.more = "查看更多"
                         }
-                    }).catch((err) => {
-                        console.log(err)
-                    });
-                }, 1000)
-            }
+
+                    }
+                }).catch((err) => {
+                    console.log(err)
+                    this.more = '数据获取失败'
+                })
+            },
+            selectItem(song){
+                if(song.id){
+
+                }
+
+                //this.insertSong(song)
+            },
+            _checkMore(data){
+                const song = data.songs
+                if (!song.length || song.length > data.songCount) {
+                    this.hasMore = false
+                }
+            },
+            _normalizeSongs(list){
+                console.log(list)
+                let ret = [];
+                list.forEach((musicData) => {
+                    if (musicData.id) {
+                        ret.push((musicData));
+                    }
+                })
+                return ret;
+            },
+            ...mapActions([
+                'insertSong'
+            ])
         },
         watch: {
             searchText(){
-                this.limit = 20         //归位
                 if (this.searchText == '') {
+                    this.limit = 20
                 } else {
-                    api.getSearchMusic(this.searchText, this.limit).then((res) => {
-                        res = res.data
-                        if (res.code === ERR_OK) {
-                            this.searchList = res.result.songs
-                        }
-                    }).catch((err) => {
-                        console.log(err)
-                    })
+                    this.limit = 20
+                    this.$refs.search.scrollTo(0, 0)
+                    this.search()
                 }
             }
         },
@@ -208,6 +265,17 @@
                     line-height: 20px;
                     .no-wrap();
                 }
+            }
+            .more {
+                height: 30px;
+                line-height: 30px;
+                font-size: @fontSizeDesc;
+                text-align: center;
+                background-color: @bgcolor;
+            }
+            .more-loading {
+                width: 30px;
+                height: 30px;
             }
         }
     }

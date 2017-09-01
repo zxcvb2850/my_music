@@ -46,8 +46,8 @@
                 api.getSongDetails(this.singer.id).then((res) => {
                     res = res.data;
                     if (res.code === ERR_OK) {
+                        console.log(res.playlist.tracks)
                         this.songs = this._normalizeSongs(res.playlist.tracks);
-                        console.log(this.songs)
                     }
                 })
             },

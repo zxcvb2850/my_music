@@ -134,21 +134,27 @@
         },
         watch: {
             currentSong(newSong, oldSong) {
+                if (!newSong.id) {
+                    return
+                }
                 if (newSong.id === oldSong.id) {
                     return
                 }
 
                 if (this.currentLyric) {
                     this.currentLyric.stop()
+                    this.currentTime = 0
+                    this.playingLyric = ''
+                    this.currentLineNum = 0
                 }
 
-                setTimeout(() => {
+                clearTimeout(this.timer)
+                this.timer = setTimeout(() => {
                     this.$refs.audio.play()
                     this.getLyric()
                 }, 1000)
             },
             playing(newPlaying) {
-
                 const audio = this.$refs.audio
                 this.$nextTick(() => {
                     newPlaying ? audio.play() : audio.pause()
@@ -499,10 +505,12 @@
                 .subtitle {
                     margin: 0 auto;
                     width: 70%;
+                    height: 30px;
                     line-height: @lineHeight/2;
                     text-align: left;
                     font-size: @fontSizeDesc;
                     color: @songListBg;
+                    overflow: hidden;
                 }
             }
             .middle {
