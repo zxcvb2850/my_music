@@ -17,23 +17,41 @@
                     <span class="icon icon-close" v-if="searchText" @click="clearSearchText"></span>
                 </div>
             </div>
-            <scroll
-                    :data="searchList"
-                    :pullUp="pullUp"
-                    @pullUp="searchMore"
-                    :beforeScroll="beforeScroll"
-                    @beforeScroll="blurInput"
-                    class="search-list"
-                    ref="search"
-            >
-                <ul>
-                    <li class="list" v-for="song in searchList" @click="selectItem(song)">
-                        <h3 class="name">{{song.name}}</h3>
-                        <p class="singer">{{filterSinger(song.artists)}}-{{song.album.name}}</p>
-                    </li>
-                    <p class="more" v-html="more"></p>
-                </ul>
-            </scroll>
+            <div class="search-history" v-show="!searchText">
+                <h2 class="title">搜索历史</h2>
+                <scroll :data="searchHistory" class="history-wrapper" ref="historyList">
+                    <ul>
+                        <li v-for="searches in searchHistory" class="history-item">
+                            <div class="icon">
+                                <span class="icon icon-close"></span>
+                            </div>
+                            <div class="content">
+                                <p class="name" @click="selectHistory(searches)">{{searches}}</p>
+                                <span class="icon icon-close" @click="deleteOne(searches)"></span>
+                            </div>
+                        </li>
+                    </ul>
+                </scroll>
+            </div>
+            <div class="search-list-wrapper" ref="searchWrapper" v-show="searchText">
+                <scroll
+                        :data="searchList"
+                        :pullUp="pullUp"
+                        @pullUp="searchMore"
+                        :beforeScroll="beforeScroll"
+                        @beforeScroll="blurInput"
+                        class="search-list"
+                        ref="search"
+                >
+                    <ul>
+                        <li class="list" v-for="song in searchList" @click="selectItem(song)">
+                            <h3 class="name">{{song.name}}</h3>
+                            <p class="singer">{{filterSinger(song.artists)}}-{{song.album.name}}</p>
+                        </li>
+                        <p class="more" v-html="more"></p>
+                    </ul>
+                </scroll>
+            </div>
         </div>
     </transition>
 </template>
@@ -46,7 +64,7 @@
     import {playlistMixin} from "common/js/mixin"
     import {createSong} from "common/js/song"
     import {debounce} from "common/js/common"
-    import {mapActions} from "vuex"
+    import {mapActions, mapGetters} from "vuex"
 
     export default {
         mixins: [playlistMixin],
@@ -60,16 +78,18 @@
                 limit: 20,
                 pullUp: true,                 //上拉刷新
                 beforeScroll: true,
-                more: "查看更多",
+                more: "",
                 imgSrc: require('../../assets/loading.gif'),
                 hasMore: true
             }
         },
         created(){
+            console.log(this.searchHistory)
             this.$watch('searchText', debounce((newText) => {
                 if (newText === '') {
                     this.limit = 20
                     this.more = ''
+                    this.searchList = []
                 } else {
                     this.more = '查看更多'
                     this.limit = 20
@@ -81,7 +101,8 @@
         methods: {
             handlePlaylist(playlist){
                 const bottom = playlist.length > 0 ? '60px' : '0'
-                this.$refs.search.$el.style.bottom = bottom
+                this.$refs.searchWrapper.style.bottom = bottom
+                this.$refs.historyList.$el.style.bottom = bottom
                 this.$refs.search.refresh()
             },
             searchShow(){
@@ -175,9 +196,16 @@
                         console.log("数据出错啦")
                     }
                 }, 300)
+                this.saveSearchHistory(this.searchText)
             },
             blurInput(){
                 this.$refs.searchText.blur()
+            },
+            selectHistory(item){
+                this.searchText = item;
+            },
+            deleteOne(item){
+                this.deleteSearchHistory(item)
             },
             _checkMore(data){
                 const song = data.songs
@@ -195,7 +223,14 @@
                 return ret;
             },
             ...mapActions([
-                'insertSong'
+                'insertSong',
+                'saveSearchHistory',
+                'deleteSearchHistory'
+            ])
+        },
+        computed: {
+            ...mapGetters([
+                'searchHistory'
             ])
         },
         components: {
@@ -275,42 +310,98 @@
                 }
             }
         }
-        .search-list {
+        .search-history {
             position: absolute;
             top: @headerHeight;
             left: 0;
             bottom: 0;
             right: 0;
             z-index: 9;
-            .list {
-                padding: 6px 10px;
-                .border-1px(@divisionLine);
-                .name {
-                    width: 100%;
-                    font-weight: 500;
-                    font-size: @fontSizeTile;
-                    line-height: @fontSizeIcon;
-                    color: @blackColor;
-                    .no-wrap();
-                }
-                .singer {
-                    width: 100%;
-                    font-size: @fontSizeDesc;
-                    color: @iconColor;
-                    line-height: 20px;
-                    .no-wrap();
-                }
-            }
-            .more {
+            .title {
+                width: 100%;
                 height: 30px;
-                line-height: 30px;
-                font-size: @fontSizeDesc;
-                text-align: center;
                 background-color: @bgcolor;
+                line-height: 30px;
+                font-weight: 500;
+                text-align: center;
             }
-            .more-loading {
-                width: 30px;
-                height: 30px;
+            .history-wrapper {
+                position: absolute;
+                top: 30px;
+                left: 0;
+                right: 0;
+                bottom: 0;
+                z-index: -1;
+            }
+            .history-item {
+                display: flex;
+                padding: 0 20px;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                line-height: 40px;
+                width: 100%;
+                font-size: @fontSizeMin;
+                .icon {
+                    flex: 20px 0 0;
+                }
+                .content {
+                    flex: 1;
+                    display: flex;
+                    .border-1px(@divisionLine);
+                    .name {
+                        flex: 1;
+                        width: 100%;
+                        .no-wrap();
+                    }
+                    .icon {
+                        flex: 0 0 20px;
+                        font-size: @fontSizeIcon;
+                    }
+                }
+            }
+        }
+        .search-list-wrapper {
+            position: absolute;
+            top: @headerHeight;
+            left: 0;
+            bottom: 0;
+            right: 0;
+            z-index: 9;
+            .search-list {
+                width: 100%;
+                height: 100%;
+                overflow: hidden;
+                .list {
+                    padding: 6px 10px;
+                    .border-1px(@divisionLine);
+                    .name {
+                        width: 100%;
+                        font-weight: 500;
+                        font-size: @fontSizeTile;
+                        line-height: @fontSizeIcon;
+                        color: @blackColor;
+                        .no-wrap();
+                    }
+                    .singer {
+                        width: 100%;
+                        font-size: @fontSizeDesc;
+                        color: @iconColor;
+                        line-height: 20px;
+                        .no-wrap();
+                    }
+                }
+                .more {
+                    height: 30px;
+                    line-height: 30px;
+                    font-size: @fontSizeDesc;
+                    text-align: center;
+                    background-color: @bgcolor;
+                }
+                .more-loading {
+                    width: 30px;
+                    height: 30px;
+                }
             }
         }
     }

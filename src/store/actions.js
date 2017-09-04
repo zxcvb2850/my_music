@@ -4,6 +4,7 @@
 import * as types from "./mutation-types"
 import {playMode} from "common/js/config"
 import {RandomArr, FindIndex} from "common/js/common"
+import {saveSearch, deleteSearch} from "common/js/cache"
 
 /*列表中点击歌曲*/
 export const selectPlay = ({commit, state}, {list, index}) => {
@@ -70,4 +71,14 @@ export const insertSong = function ({commit, state}, song) {
     commit(types.SET_CURRENT_INDEX, currentIndex)
     commit(types.SET_FULL_SCREEN, true)
     commit(types.SET_PLAYING_STATE, true)
+}
+
+/*搜索历史*/
+export const saveSearchHistory = ({commit}, query) => {
+    commit(types.SET_SEARCH_HISTORY, saveSearch(query))
+}
+
+/*删除历史*/
+export const deleteSearchHistory = ({commit}, query) => {
+    commit(types.SET_SEARCH_HISTORY, deleteSearch(query))
 }
