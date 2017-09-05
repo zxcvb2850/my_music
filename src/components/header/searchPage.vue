@@ -17,7 +17,7 @@
                     <span class="icon icon-close" v-if="searchText" @click="clearSearchText"></span>
                 </div>
             </div>
-            <div class="search-history" v-show="!searchText">
+            <div class="search-history" v-show="!searchText" ref="history">
                 <h2 class="title">搜索历史</h2>
                 <scroll :data="searchHistory" class="history-wrapper" ref="historyList">
                     <ul>
@@ -83,8 +83,15 @@
                 hasMore: true
             }
         },
+        watch: {
+            isSearchPage() {
+                this.$refs.historyList.refresh();
+            },
+            searchHistory(){
+                this.$refs.historyList.refresh();
+            }
+        },
         created(){
-            console.log(this.searchHistory)
             this.$watch('searchText', debounce((newText) => {
                 if (newText === '') {
                     this.limit = 20
@@ -96,14 +103,17 @@
                     this.$refs.search.scrollTo(0, 0)
                     this.search()
                 }
+                this.$refs.historyList.refresh();
             }, 500))
         },
         methods: {
             handlePlaylist(playlist){
                 const bottom = playlist.length > 0 ? '60px' : '0'
                 this.$refs.searchWrapper.style.bottom = bottom
-                this.$refs.historyList.$el.style.bottom = bottom
                 this.$refs.search.refresh()
+
+                this.$refs.history.style.bottom = bottom
+                this.$refs.historyList.refresh();
             },
             searchShow(){
                 this.isSearchPage = true;

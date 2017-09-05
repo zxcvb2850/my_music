@@ -80,6 +80,7 @@
     import Loading from "base/loading/loading"
     import {mapMutations} from "vuex"
     import {playlistMixin} from "common/js/mixin"
+    import {Zerofill} from "common/js/common"
 
     export default {
         mixins: [playlistMixin],
@@ -128,7 +129,7 @@
             },
             _getNowDate(){
                 let date = new Date();
-                this.newDate = date.getDate();
+                this.newDate = Zerofill(date.getDate());
             },
             _getRxclusivePush(){
                 api.getRxclusivePush().then((res) => {
