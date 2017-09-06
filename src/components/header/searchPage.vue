@@ -87,8 +87,12 @@
             isSearchPage() {
                 this.$refs.historyList.refresh();
             },
-            searchHistory(){
-                this.$refs.historyList.refresh();
+            searchText(newText){
+                if (!newText) {
+                    setTimeout(() => {
+                        this.$refs.historyList.refresh();
+                    }, 20)
+                }
             }
         },
         created(){

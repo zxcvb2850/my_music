@@ -1,6 +1,6 @@
 <template>
     <div class="recommend" ref="recommend">
-        <scroll class="recommend-content" :data="recommendMv" ref="scroll">
+        <scroll class="recommend-content" :data="shortcut" ref="scroll">
             <div>
                 <div v-if="recommends.length" class="slider-wrapper">
                     <slider>
@@ -164,6 +164,11 @@
                 setSinger: "SET_SINGER"
             })
         },
+        computed: {
+            shortcut(){
+                return this.recommends.concat(this.recommendList, this.rxclusivePush, this.recommendMv)
+            }
+        },
         components: {
             Slider,
             Scroll,
@@ -280,13 +285,13 @@
             }
         }
         .rxclusive-list {
+            .list-title {
+                margin: 4px 0;
+            }
             .rxclusive-item {
                 display: inline-block;
                 margin: 4px 0;
                 width: 49%;
-                .music-title{
-                    height:auto;
-                }
                 &:first-child {
                     float: left;
                 }
@@ -305,9 +310,6 @@
                 padding: 10px 0;
             }
             .rec-mv-item {
-                .music-title{
-                    height:auto;
-                }
                 float: left;
                 width: 49%;
                 img {
