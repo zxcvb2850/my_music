@@ -168,7 +168,7 @@
             bottom: 0;
             right: 0;
             z-index: 10;
-            background-color: rgba(100, 100, 100, .5);
+            background-color: @maskBgColor;
         }
     }
 </style>

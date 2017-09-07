@@ -88,11 +88,12 @@
                         <i @click.stop="togglePlaying" class="icon icon-mini" :class="playMiniIcon"></i>
                     </progress-circle>
                 </div>
-                <div class="control">
+                <div class="control" @click.stop="showPlaylist">
                     <i class="icon icon-menu"></i>
                 </div>
             </div>
         </transition>
+        <playlist ref="playlist"></playlist>
         <audio
                 :src="currentSong.url"
                 ref="audio"
@@ -110,12 +111,15 @@
     import ProgressBar from "base/progress-bar/progress-bar"
     import ProgressCircle from "base/progress-circle/progress-circle"
     import Scroll from "base/scroll/scroll"
+    import Playlist from "components/player/playlist/playlist"
     import {ERR_OK} from "api/config"
     import {mapGetters, mapMutations} from "vuex"
     import {prefixStyle} from "common/js/dom"
     import {Zerofill, RandomArr, FindIndex} from "common/js/common"
     import {playMode} from "common/js/config"
+
     const transform = prefixStyle('transform')
+
     export default {
         data(){
             return {
@@ -357,6 +361,9 @@
                 this.$refs.middleL.style.opacity = 1
                 this.hideLyric = ''
             },
+            showPlaylist(){
+              this.$refs.playlist.show()
+            },
             _getPosAndScale(){
                 const targetWidth = 40
                 const paddingLeft = 40
@@ -408,13 +415,15 @@
         components: {
             ProgressBar,
             ProgressCircle,
-            Scroll
+            Scroll,
+            Playlist
         }
     }
 </script>
 
 <style lang="less" scoped>
     @import "~common/style/index";
+
     @lineHeight: 30px;
     .player {
         .normal-player {
@@ -770,6 +779,7 @@
             }
         }
     }
+
     @keyframes rotate {
         0% {
             -webkit-transform: rotate(0);

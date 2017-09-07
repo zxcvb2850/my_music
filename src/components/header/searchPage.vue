@@ -23,7 +23,7 @@
                     <ul>
                         <li v-for="searches in searchHistory" class="history-item">
                             <div class="icon">
-                                <span class="icon icon-close"></span>
+                                <span class="icon icon-clock"></span>
                             </div>
                             <div class="content">
                                 <p class="name" @click="selectHistory(searches)">{{searches}}</p>
@@ -357,7 +357,8 @@
                 width: 100%;
                 font-size: @fontSizeMin;
                 .icon {
-                    flex: 20px 0 0;
+                    flex: 30px 0 0;
+                    font-size: 20px;
                 }
                 .content {
                     flex: 1;

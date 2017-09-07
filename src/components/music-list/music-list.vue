@@ -110,6 +110,7 @@
                 })
             },
             random(){
+                console.log(this.songs)
                 this.randomPlay({
                     list: this.songs
                 })
