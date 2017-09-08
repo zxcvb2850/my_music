@@ -113,14 +113,16 @@
     import Scroll from "base/scroll/scroll"
     import Playlist from "components/player/playlist/playlist"
     import {ERR_OK} from "api/config"
-    import {mapGetters, mapMutations} from "vuex"
+    import {mapGetters, mapMutations, mapActions} from "vuex"
     import {prefixStyle} from "common/js/dom"
-    import {Zerofill, RandomArr, FindIndex} from "common/js/common"
+    import {Zerofill} from "common/js/common"
     import {playMode} from "common/js/config"
+    import {playerMixin} from "common/js/mixin"
 
     const transform = prefixStyle('transform')
 
     export default {
+        mixins: [playerMixin],
         data(){
             return {
                 songReady: false,
@@ -287,6 +289,7 @@
             ready(){
                 this.songReady = true
                 this.currentDuration = this.$refs.audio.duration        //获取总时长
+                this.savePlayHistory(this.currentSong)
             },
             error(){
                 this.songReady = true
@@ -310,22 +313,6 @@
                 if (this.currentLyric) {
                     this.currentLyric.seek(currentTime * 1000)
                 }
-            },
-            changMode(){
-                const mode = (this.mode + 1) % 3;
-                this.setPlayMode(mode)
-                let list = null
-                if (mode === playMode.random) {
-                    list = RandomArr(this.sequenceList)
-                } else {
-                    list = this.sequenceList
-                }
-                this.resetCurrentIndex(list)
-                this.setPlayList(list)
-            },
-            resetCurrentIndex(list){
-                let index = FindIndex(list, this.currentSong);
-                this.setCurrentIndex(index)
             },
             getLyric() {
                 this.currentSong.getLyric()
@@ -362,7 +349,7 @@
                 this.hideLyric = ''
             },
             showPlaylist(){
-              this.$refs.playlist.show()
+                this.$refs.playlist.show()
             },
             _getPosAndScale(){
                 const targetWidth = 40
@@ -376,12 +363,11 @@
                 return {x, y, scale}
             },
             ...mapMutations({
-                setFullScreen: 'SET_FULL_SCREEN',
-                setPlayingState: 'SET_PLAYING_STATE',
-                setCurrentIndex: 'SET_CURRENT_INDEX',
-                setPlayMode: 'SET_PLAY_MODE',
-                setPlayList: 'SET_PLAYLIST'
-            })
+                setFullScreen: 'SET_FULL_SCREEN'
+            }),
+            ...mapActions([
+                'savePlayHistory'
+            ])
         },
         computed: {
             playIcon() {
@@ -399,17 +385,10 @@
             percent() {
                 return this.currentTime / this.currentDuration
             },
-            iconMode(){
-                return this.mode === playMode.sequence ? 'icon-loop' : this.mode === playMode.loop ? 'icon-loop_single' : 'icon-random'
-            },
             ...mapGetters([
                 'fullScreen',
-                'playList',
-                'currentSong',
                 'playing',
-                'currentIndex',
-                'mode',
-                'sequenceList'
+                'currentIndex'
             ])
         },
         components: {

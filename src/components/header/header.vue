@@ -20,16 +20,20 @@
                     </div>
                 </div>
                 <div class="nav-list">
-                    <span>暂无消息</span>
+                    <ul class="list-wrapper">
+                        <li class="list" @click="showHistory">最近播放</li>
+                    </ul>
                 </div>
             </div>
         </transition>
         <search-page ref="searchPage"></search-page>
+        <play-history ref="playHistory"></play-history>
     </div>
 </template>
 
 <script>
     import SearchPage from "components/header/searchPage"
+    import PlayHistory from "components/play-history/play-history"
 
     export default {
         data(){
@@ -47,10 +51,14 @@
             },
             hideMenu(){
                 this.isNavMenu = !this.isNavMenu;
+            },
+            showHistory(){
+                this.$refs.playHistory.show()
             }
         },
         components: {
-            SearchPage
+            SearchPage,
+            PlayHistory
         }
     }
 </script>
@@ -105,7 +113,7 @@
             left: 0;
             width: 70%;
             z-index: 10;
-            background-color: @iconColor;
+            background-color: @bgcolor;
             transition: all .25s;
             &.slow-enter {
                 transform: translate3d(-100%, 0, 0)
@@ -155,10 +163,19 @@
                 }
             }
             .nav-list {
-                margin-top: 50%;
                 width: 100%;
-                text-align: center;
-                background-color: @iconColor;
+                text-align: left;
+                -webkit-box-sizing: border-box;
+                -moz-box-sizing: border-box;
+                box-sizing: border-box;
+                .list {
+                    padding: 0 20px;
+                    height: 30px;
+                    line-height: 30px;
+                    font-size: @fontSizeMin;
+                    color: @blackColor;
+                    .border-1px(@divisionLine);
+                }
             }
         }
         .menu-mask {

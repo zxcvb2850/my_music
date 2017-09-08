@@ -3,15 +3,20 @@
         <div class="playlist" v-show="showFlag" @click="hide">
             <div class="list-wrapper" @click.stop>
                 <div class="list-header">
-                    <h2 class="title">
-                        <i class="icon icon-loop"></i>
-                        <span class="text">循环列表</span>
-                        <span class="clear"><i class="icon icon-trash"></i>清空</span>
-                    </h2>
+                    <div class="title">
+                        <div class="loop-style">
+                            <p class="loop-wrapper" @click="changMode">
+                                <i class="icon" :class="iconMode"></i>
+                                <span class="text">{{modeText}}</span>
+                            </p>
+                        </div>
+                        <p class="clear" @click="showConfirm"><i class="icon icon-trash"></i>清空</p>
+                    </div>
                 </div>
                 <scroll :data="sequenceList" class="list-content" ref="listContent">
-                    <ul>
+                    <transition-group name="list" tag="ul" ref="list">
                         <li
+                                :key="item.id"
                                 class="item"
                                 v-for="(item,index) in sequenceList"
                                 @click="selectItem(item,index)"
@@ -20,26 +25,30 @@
                             <i class="current icon" :class="getCurrentIcon(item)"></i>
                             <p class="text" :class="{'active':currentSong.id === item.id}">{{item.name}}<span
                                     class="singer">-{{item.singer}}</span></p>
-                            <span class="like">
-                            <i class="icon icon-xinchangtai"></i>
-                        </span>
-                            <span class="delete">
-                            <i class="icon icon-close"></i>
-                        </span>
+                            <span class="like"><i class="icon icon-xinchangtai"></i></span>
+                            <span class="delete" @click.stop="deleteOne(item)"><i class="icon icon-close"></i></span>
                         </li>
-                    </ul>
+                    </transition-group>
                 </scroll>
             </div>
+            <confirm
+                    ref="confirm"
+                    text="是否清空播放列表"
+                    confirmBtnText="清空"
+                    @confirm="confirmClear"></confirm>
         </div>
     </transition>
 </template>
 
 <script>
-    import {mapGetters, mapMutations} from 'vuex'
-    import Scroll from 'base/scroll/scroll'
-    import {playMode} from 'common/js/config'
+    import {mapGetters, mapMutations, mapActions} from "vuex"
+    import Scroll from "base/scroll/scroll"
+    import Confirm from "base/confirm/confirm"
+    import {playMode} from "common/js/config"
+    import {playerMixin} from "common/js/mixin"
 
     export default {
+        mixins: [playerMixin],
         data() {
             return {
                 showFlag: false
@@ -50,27 +59,29 @@
                 if (!this.showFlag || newSong.id === oldSong.id) {
                     return
                 }
-                this.scrollToCurrent(newSong)
+                setTimeout(() => {
+                    this.scrollToCurrent(newSong)
+                }, 1000)
             }
         },
         methods: {
-            show(){
+            show() {
                 this.showFlag = true
                 setTimeout(() => {
                     this.$refs.listContent.refresh()
                     this.scrollToCurrent(this.currentSong)
                 }, 20)
             },
-            hide(){
+            hide() {
                 this.showFlag = false
             },
-            getCurrentIcon(item){
+            getCurrentIcon(item) {
                 if (this.currentSong.id === item.id) {
                     return 'icon-suspendedzhuanhuan'
                 }
                 return ''
             },
-            selectItem(item, index){
+            selectItem(item, index) {
                 if (this.mode === playMode.random) {
                     index = this.playList.findIndex((song) => {
                         return song.id === item.id
@@ -79,27 +90,42 @@
                 this.setCurrentIndex(index)
                 this.setPlayingState(true)
             },
-            scrollToCurrent(current){
+            scrollToCurrent(current) {
                 const index = this.sequenceList.findIndex((song) => {
                     return current.id === song.id
                 })
-                this.$refs.listContent.scrollToElement(this.$refs.listItem[index], 300)
+                this.$refs.listContent.scrollToElement(this.$refs.list.$el.children[index], 300)
+            },
+            deleteOne(item) {
+                this.deleteSong(item)
+                if (!this.playList.length) {
+                    this.hide()
+                }
+            },
+            showConfirm(){
+                this.$refs.confirm.show()
+            },
+            confirmClear() {
+                this.deleteSongList()
+                this.hide()
             },
             ...mapMutations({
                 'setCurrentIndex': 'SET_CURRENT_INDEX',
                 'setPlayingState': 'SET_PLAYING_STATE'
-            })
-        },
-        computed: {
-            ...mapGetters([
-                'sequenceList',
-                'currentSong',
-                'playList',
-                'mode'
+            }),
+            ...mapActions([
+                'deleteSong',
+                'deleteSongList'
             ])
         },
+        computed: {
+            modeText() {
+                return this.mode === playMode.sequence ? '顺序播放' : this.mode === playMode.random ? '随机播放' : '单曲循环'
+            }
+        },
         components: {
-            Scroll
+            Scroll,
+            Confirm
         }
     }
 </script>
@@ -148,17 +174,26 @@
                     display: flex;
                     align-items: center;
                     font-weight: 500;
-                    .icon {
-                        margin-right: 10px;
-                        font-size: 20px;
-                        color: @iconColor;
-                    }
-                    .text {
+                    .loop-style {
                         flex: 1;
-                        font-size: @fontSizeTile;
-                        color: @blackColor;
+                        .loop-wrapper {
+                            width: 100px;
+                        }
+                        .icon {
+                            margin-right: 10px;
+                            font-size: 16px;
+                            font-weight: 700;
+                            color: @iconColor;
+                        }
+                        .text {
+                            flex: 1;
+                            font-size: @fontSizeDesc;
+                            color: @blackColor;
+                        }
                     }
                     .clear {
+                        flex: 0 0 60px;
+                        text-align: right;
                         font-size: @fontSizeMin;
                         //extend-click();
                         .icon-clear {
@@ -174,7 +209,6 @@
                 right: 0;
                 top: @ListHeaderHeight;
                 bottom: @ListHeaderHeight;
-                //height: 300px;
                 overflow: hidden;
                 .item {
                     display: flex;

@@ -2,7 +2,7 @@
  * Created by 大白胡子 on 2017/6/27.
  */
 import {playMode} from "common/js/config"
-import {localSearch} from "common/js/cache"
+import {localSearch, loadPlay} from "common/js/cache"
 
 const state = {
     singer: {},                     //当前展示的歌曲列表
@@ -12,7 +12,8 @@ const state = {
     sequenceList: [],               //顺序列表
     mode: playMode.sequence,        //播放顺序
     currentIndex: -1,               //当前播放的index
-    searchHistory: localSearch()    //搜索历史
+    searchHistory: localSearch(),   //搜索历史
+    playHistory: loadPlay()         //播放历史
 }
 
 export default state
