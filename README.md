@@ -18,7 +18,7 @@ Welcome to 王小白!
 >- css使用的是less
 
 
-# 目标功能
+## 目标功能
 
 - [x] 首页
 - [x] 歌单列表
@@ -34,7 +34,7 @@ Welcome to 王小白!
 - [ ] 我喜欢的
 
 
-鸣谢
+## 鸣谢
 
 此网站提供的API: [网易音乐API](https://binaryify.github.io/NeteaseCloudMusicApi/#/) ,此接口的说明请到这里查看
 
@@ -60,4 +60,4 @@ npm run build
 **由于我使用的是网易云音乐的API是很牛很牛的大佬 [ Binaryify](https://github.com/Binaryify/NeteaseCloudMusicApi) 提供。所以还需要自己手动开启数据获取**
 
 
-# 再次非常感谢[网易音乐API](https://github.com/Binaryify/NeteaseCloudMusicApi) 的大佬对接口文档的不断维护与更新。
+## 再次非常感谢[网易音乐API](https://github.com/Binaryify/NeteaseCloudMusicApi) 的大佬对接口文档的不断维护与更新。
