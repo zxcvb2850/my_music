@@ -10,14 +10,13 @@ Welcome to 王小白!
 ![](https://github.com/zxcvb2850/my_music/1.jpg)
 
 
-##技术栈
+## 技术栈
 
 >- 传说中的VUE全家桶(vue-cli   vue   vue-router   vuex)
 >- vue的组件开发，减少了很多代码的冗余
 >- http使用的是axios
 >- css使用的是less
 
-##TODO
 
 # 目标功能
 
