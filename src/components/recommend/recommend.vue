@@ -277,7 +277,7 @@
                     padding: 2px;
                     font-weight: normal;
                     font-size: 10px;
-                    height: 30px;
+                    height: 26px;
                     line-height: 16px;
                     text-align: left;
                     color: #000;
@@ -311,7 +311,7 @@
             }
             .rec-mv-item {
                 float: left;
-                width: 49%;
+                width: 50%;
                 img {
                     width: 100%;
                 }
