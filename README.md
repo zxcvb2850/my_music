@@ -5,9 +5,8 @@ Welcome to 王小白!
 # 高仿网易云播放器
 >- 除了后端的歌曲获取是直接搜索网上的API，算是半高仿吧
 >- 废话不多说直接上地址：[项目地址](http://music.qking.pw)  **使用chrome的手机调试模式效果更佳**
->- 效果图：[飞机票](#design)
 >- 手机直接扫二维码
-![](https://github.com/zxcvb2850/my_music/1520843330.png)
+![](http://github.com/zxcvb2850/my_music/raw/develop/1520843330.png)
 
 
 ## 技术栈
