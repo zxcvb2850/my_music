@@ -35,7 +35,7 @@ Welcome to 王小白!
 
 效果图
 
-<img src="./screenshot/1.png" alt="效果图" width="375" height="667"><img src="./screenshot/2.png" alt="效果图" width="375" height="667"><img src="./screenshot/3.png" alt="效果图" width="375" height="667"><img src="./screenshot/4.png" alt="效果图" width="375" height="667"><img src="./screenshot/5.png" alt="效果图" width="375" height="667"><img src="./screenshot/6.png" alt="效果图" width="375" height="667"><img src="./screenshot/7.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/1.png" alt="效果图" width="375" height="667"> <img src="./screenshot/2.png" alt="效果图" width="375" height="667"> <img src="./screenshot/3.png" alt="效果图" width="375" height="667"> <img src="./screenshot/4.png" alt="效果图" width="375" height="667"> <img src="./screenshot/5.png" alt="效果图" width="375" height="667"> <img src="./screenshot/6.png" alt="效果图" width="375" height="667"> <img src="./screenshot/7.png" alt="效果图" width="375" height="667">
 
 ## 鸣谢
 
