@@ -9,8 +9,8 @@ const apiMusic = {
   exclusivePush: "/personalized/privatecontent",   //独家推送,没有参数
   fineSong: "/top/playlist/highquality",           //获取精品歌单，参数?limit=30;
   songDetails: "/playlist/detail",                 //获取歌单详细信息，参数?id=;歌单的id
-  musicDetails: "/song/detail",                //获取音乐的详细信息，参数?ids= , /*多个参数用逗号隔开*/
-  musicUrl: "/music/url",                          //获取音乐的url，参数?id= , /*多个参数用逗号隔开*/
+  musicDetails: "/song/detail",                   //获取音乐的详细信息，参数?ids= , /*多个参数用逗号隔开*/
+  musicUrl: "/song/url",                          //获取音乐的url，参数?id= , /*多个参数用逗号隔开*/
   searchMusic: "/search",                          //搜索音乐，参数?keywords=;可以是汉字
   lyricsMusic: "/lyric",                           //获取音乐的歌词，参数?id=;音乐的id
   musicComment: "/comment/music",                  //获取音乐的评论，参数?id=;音乐的id

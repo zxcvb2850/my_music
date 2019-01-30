@@ -1,14 +1,13 @@
 Welcome to 王小白!
 ===================
 
+后期需要重新做，以前学习vue的时候写的，很多地方都不知道什么意思和什么意义了
 
 # 高仿网易云播放器
 >- 除了后端的歌曲获取是直接搜索网上的API，算是半高仿吧
->- 废话不多说直接上地址：[项目地址](http://music.qking.pw)  **使用chrome的手机调试模式效果更佳**
+>- 先线上访问一下看下效果吧：[项目地址](http://www.qhyking.com)  **使用chrome的手机调试模式效果更佳**
 >- 手机直接扫二维码
-
-
-![](https://github.com/zxcvb2850/my_music/raw/develop/1520843330.jpg)
+![image](./screenshot/er.png)
 
 
 ## 技术栈
@@ -34,6 +33,14 @@ Welcome to 王小白!
 - [x] 搜索历史
 - [ ] 我喜欢的
 
+效果图
+![image](./screenshot/1.png)
+![image](./screenshot/2.png)
+![image](./screenshot/3.png)
+![image](./screenshot/4.png)
+![image](./screenshot/5.png)
+![image](./screenshot/6.png)
+![image](./screenshot/7.png)
 
 ## 鸣谢
 

@@ -5,7 +5,8 @@ import {ERR_OK} from "api/config"
 
 export const dataArray = function (res) {
     if (res.code === ERR_OK) {
-        let result = res.result
+        let result = res.playlist
+        console.log('-----------',result);
         let list = {}
         let arr = []
         for (let i = 0; i < result.tracks.length; i++) {
@@ -13,7 +14,7 @@ export const dataArray = function (res) {
                 let json = {}
                 json.id = result.tracks[i].id
                 json.songname = result.tracks[i].name
-                json.singername = result.tracks[i].artists[0].name
+                json.singername = result.tracks[i].ar[0].name
                 arr.push(json)
             }
         }
