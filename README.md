@@ -5,7 +5,7 @@ Welcome to 王小白!
 
 # 高仿网易云播放器
 >- 除了后端的歌曲获取是直接搜索网上的API，算是半高仿吧
->- 先线上访问一下看下效果吧：[项目地址](http://www.qhyking.com)  **使用chrome的手机调试模式效果更佳**
+>- 先线上访问一下看下效果吧：[项目地址](https://github.com/zxcvb2850/my_music)  **使用chrome的手机调试模式效果更佳**
 >- 手机直接扫二维码
 ![image](./screenshot/er.png)
 
