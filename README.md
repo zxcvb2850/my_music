@@ -34,13 +34,13 @@ Welcome to 王小白!
 - [ ] 我喜欢的
 
 效果图
-![image](./screenshot/1.png)
-![image](./screenshot/2.png)
-![image](./screenshot/3.png)
-![image](./screenshot/4.png)
-![image](./screenshot/5.png)
-![image](./screenshot/6.png)
-![image](./screenshot/7.png)
+<img src="./screenshot/1.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/2.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/3.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/4.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/5.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/6.png" alt="效果图" width="375" height="667">
+<img src="./screenshot/7.png" alt="效果图" width="375" height="667">
 
 ## 鸣谢
 
